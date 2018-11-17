@@ -10,7 +10,7 @@ Installation
 * trouver son IP (`fping -ag 192.168.1.0/24 2>/dev/null` pour lister les ip locales)
 * aller dessus avec `ssh pi@x.x.x.x`, mot de passe `raspberry`
 * changer le mot de passe avec `passwd`
-* changer son nom avec `echo acolock | sudo tee /etc/hostname`
+* changer son nom avec `echo acolock | sudo tee /etc/hostname` et `echo 127.0.1.1	acolock | tee -a /etc/hosts`
 * lui mettre son ip fixe en mettant dans `/etc/dhcpcd.conf` :
 ```
 interface eth0
