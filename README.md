@@ -19,3 +19,8 @@ static routers=192.168.1.1
 static domain_name_servers=192.168.1.1 8.8.8.8
 ```
 * le redémarrer 
+
+Installation des dépendances pour le scan de QR Code :
+
+* `apt-get install python-opencv libzbar0 python-picamera`
+* `pip install pyzbar`
