@@ -1,0 +1,19 @@
+[Unit]
+Description=ACoLock Backend
+Requires=acolock.socket
+After=network.target
+
+[Service]
+PIDFile=/run/acolock/pid
+User=pi
+Group=pi
+RuntimeDirectory=acolock
+WorkingDirectory=/home/pi/acolock/back
+ExecStart=/home/pi/acolock/back/venv/bin/gunicorn --pid /run/acolock/pid   \
+          --bind unix:/run/acolock/socket acolock:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

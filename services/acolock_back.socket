@@ -1,0 +1,8 @@
+[Unit]
+Description=ACoLock Backend socket
+
+[Socket]
+ListenStream=/run/acolock/socket
+
+[Install]
+WantedBy=sockets.target
