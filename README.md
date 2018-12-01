@@ -24,3 +24,32 @@ Installation des dépendances pour le scan de QR Code :
 
 * `apt-get install python-opencv libzbar0 python-picamera`
 * `pip install pyzbar`
+
+Dépendances pour le back :
+
+* `apt-get install nginx`
+
+Création du certificat pour l'HTTPS :
+
+* sur le compte OVH activer le mode développeur dans les paramètres avancés
+* en root sur le pi (`sudo -s`) :
+* `curl https://get.acme.sh | sh`
+* `source ~/.acme.sh/acme.sh.env`
+* suivre les instructions de https://github.com/Neilpang/acme.sh/wiki/How-to-use-OVH-domain-api :
+    * générer une application sur https://eu.api.ovh.com/createApp/
+    * puis sur le pi
+    * `read OVH_AK` et saisir l'application key
+    * `read OVH_AS` et saisir la secret key
+    * `export OVH_AK OVH_AS`
+    * `acme.sh --issue -d acolock.acolab.fr --dns dns_ovh`
+    * suivre le lien indiqué et saisir les identifiants et une durée "Unlimited"
+    * relancer la dernière commande
+* suivre les instructions pour installer le certificat sur nginx (https://github.com/Neilpang/acme.sh#3-install-the-cert-to-apachenginx-etc) :
+    * `acme.sh --install-cert -d acolock.acolab.fr --key-file /root/.acme.sh/acolock.acolab.fr/acolock.acolab.fr.key --fullchain-file /root/.acme.sh/acolock.acolab.fr/fullchain.cer --reloadcmd "service nginx force-reload"`
+
+Configuration de nginx :
+
+En root sur le pi :
+
+* supprimer le site par défaut nginx : `rm /etc/nginx/sites-enabled/default`
+* to be continued
