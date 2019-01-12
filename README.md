@@ -1,6 +1,9 @@
 Installation
 ============
 
+Système
+-------
+
 * Télécharger RASPBIAN STRETCH LITE : https://www.raspberrypi.org/downloads/raspbian/
 * `unzip 2018-11-13-raspbian-stretch-lite.zip`
 * `sudo dd if=2018-11-13-raspbian-stretch-lite.img of=/dev/sdX bs=4M conv=fsync`
@@ -20,12 +23,24 @@ static domain_name_servers=192.168.1.1 8.8.8.8
 ```
 * le redémarrer 
 
-Installation des dépendances pour le scan de QR Code :
+Wifi
+----
+
+* [Realtek RTL8188 150M USB WiFi Wireless Adapter](https://www.banggood.com/Realtek-8188-150M-USB-Wi-Fi-Wireless-Adapter-Realtek-RTL8188-Chip-For-Windows-Mac-Linux-p-983419.html?cur_warehouse=CN)
+* `sudo raspi-config`
+* Network Options
+* Wi-fi
+* Saisir le SSID et le mot de passe
+
+Dépendances pour le scan de QR Code
+-----------------------------------
 
 * `apt-get install python-opencv libzbar0 python-picamera`
 * `pip install pyzbar`
 
-Dépendances pour le back :
+
+Dépendances pour le back
+------------------------
 
 * `apt-get install nginx`
 
