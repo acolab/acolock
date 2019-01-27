@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cd $(dirname $0)
+docker build -t acolock .
+
+docker run \
+  -p 127.0.0.1:3022:22/tcp \
+  -p 127.0.0.1:3080:80/tcp \
+  -p 127.0.0.1:3443:443/tcp \
+  -d \
+  -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+  --cap-add SYS_ADMIN \
+  --name acolock \
+  acolock
