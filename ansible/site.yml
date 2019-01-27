@@ -3,7 +3,13 @@
   remote_user: pi
   tasks:
   - name: Ensure the latest nginx is installed
+    become: yes
     apt:
       name: nginx
       state: latest
+  - name: Ensure nginx service is running and enabled
     become: yes
+    service:
+      name: nginx
+      state: started
+      enabled: yes
