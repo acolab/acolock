@@ -1,0 +1,9 @@
+---
+- hosts: pi
+  remote_user: pi
+  tasks:
+  - name: Ensure the latest nginx is installed
+    apt:
+      name: nginx
+      state: latest
+    become: yes
