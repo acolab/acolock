@@ -9,3 +9,17 @@
       synchronize:
         src: ../front/build/
         dest: /home/pi/front/
+    - name: deploy back
+      synchronize:
+        src: ../back/
+        dest: /home/pi/back/
+      notify:
+        - restart back
+    - name: setup back
+      shell: /home/pi/back/setup_environment
+
+  handlers:
+    - name: restart back
+      service:
+        name: acolock_back.service
+        state: restarted

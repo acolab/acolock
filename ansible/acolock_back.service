@@ -8,8 +8,8 @@ PIDFile=/run/acolock/pid
 User=pi
 Group=pi
 RuntimeDirectory=acolock
-WorkingDirectory=/home/pi/acolock/back
-ExecStart=/home/pi/acolock/back/venv/bin/gunicorn --pid /run/acolock/pid \
+WorkingDirectory=/home/pi/back
+ExecStart=/home/pi/back/venv/bin/gunicorn --pid /run/acolock/pid \
           --bind unix:/run/acolock/socket acolock:app
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID

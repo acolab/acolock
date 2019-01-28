@@ -1,0 +1,3 @@
+exclude /__pycache__/
+exclude /venv/
+exclude /start_development_server
