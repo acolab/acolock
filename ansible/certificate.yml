@@ -15,7 +15,7 @@
       name: socat
 
   - name: Install acme.sh
-    shell: warn=False curl https://get.acme.sh | sh
+    shell: warn=False bash -c "[ -e /root/.acme.sh ] || curl https://get.acme.sh | sh"
 
   - name: generate certificate
     environment:
@@ -23,6 +23,3 @@
       OVH_AS: "{{ ovh_application_secret }}"
       OVH_CK: "{{ ovh_consumer_key }}"
     shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --issue -d acolock.acolab.fr --dns dns_ovh"
-
-  - name: install certificate
-    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d acolock.acolab.fr --key-file /etc/nginx/acolock.acolab.fr.key --fullchain-file /etc/nginx/acolock.acolab.fr.cer --reloadcmd \"service nginx force-reload\""

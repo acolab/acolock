@@ -31,10 +31,17 @@
     apt:
       name: nginx
       state: latest
+  - name: Ensure nginx service is running and enabled
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+
   - name: Ensure gunicorn is installed
     apt:
       name: gunicorn3
       state: latest
+
   - name: Ensure default nginx site is disabled
     file:
       path: /etc/nginx/sites-enabled/default
@@ -51,22 +58,17 @@
     file:
       path: /run/acolock
       state: directory
-  - name: Ensure service is running and enabled
+  - name: Ensure service is enabled
     service:
       name: acolock_back.service
-      state: started
       enabled: yes
-  - name: Ensure socket is running and enabled
+  - name: Ensure socket is enabled
     service:
       name: acolock_back.socket
-      state: started
       enabled: yes
 
-  - name: Ensure nginx service is running and enabled
-    service:
-      name: nginx
-      state: started
-      enabled: yes
+  - name: install certificate
+    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d acolock.acolab.fr --key-file /etc/nginx/acolock.acolab.fr.key --fullchain-file /etc/nginx/acolock.acolab.fr.cer --reloadcmd \"systemctl reload nginx\""
 
   handlers:
     - name: restart nginx

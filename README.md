@@ -42,7 +42,7 @@ Création du certificat HTTPS sur le pi
 
 Vous devez pouvoir déchiffrer `ansible/vault_passphrase.gpg` pour créer le certificat. Essayez avec `ansible/vault_pass.sh`. Si ça ne fonctionne pas demandez à l'une des personnes autorisées de vous aider. Vous pouvez avoir la liste des clés autorisées avec la commande `gpg --batch --list-packets ansible/vault_passphrase.gpg`.
 
-* `ansible-playbook --vault-password-file=ansible/vault_pass.sh -i ansible/test_hosts ansible/certificate.yml`
+* `ansible-playbook --vault-password-file=ansible/vault_pass.sh -i ansible/hosts ansible/certificate.yml`
 
 La création du certificat prend 2-3 minutes à cause des délais DNS.
 
@@ -51,13 +51,18 @@ Préparation du serveur
 
 Toutes les opérations sont à faire sur son poste de travail (pas sur le pi) :
 
-* préparer le serveur : `ansible-playbook -i ansible/hosts ansible/site.yml`
-* déployer l'application : `ansible-playbook -i ansible/hosts ansible/app.yml`
+* préparer le serveur, à faire une seule fois ou quand on change la configuration système
+
+    ansible-playbook -i ansible/hosts ansible/site.yml
+
+* déployer l'application, à faire à chaque fois qu'on veut mettre à jour l'application (back ou front) :
+
+    ansible-playbook -i ansible/hosts ansible/app.yml
 
 Tester dans un container local
 ------------------------------
 
-Utile seulement si vous voulez tester le déploiement sans toucher au pi.
+L'installation peut être faite dans un container docker. C'est utile pour tester le déploiement sans toucher au pi.
 
 * installer `docker`
 * créer le container : `test_container/run`. Si vous l'avez déjà fait il vous dira qu'il existe déjà, vous pouvez :
