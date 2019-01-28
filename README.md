@@ -32,6 +32,45 @@ Wifi
 * Wi-fi
 * Saisir le SSID et le mot de passe
 
+Ansible
+-------
+
+La configuration du pi se fait avec Ansible, à installer avec `sudo apt-get install ansible` sur Debian et dérivées.
+
+Création du certificat HTTPS sur le pi
+--------------------------------------
+
+Vous devez pouvoir déchiffrer `ansible/vault_passphrase.gpg` pour créer le certificat. Essayez avec `ansible/vault_pass.sh`. Si ça ne fonctionne pas demandez à l'une des personnes autorisées de vous aider. Vous pouvez avoir la liste des clés autorisées avec la commande `gpg --batch --list-packets ansible/vault_passphrase.gpg`.
+
+* `ansible-playbook --vault-password-file=ansible/vault_pass.sh -i ansible/test_hosts ansible/certificate.yml`
+
+La création du certificat prend 2-3 minutes à cause des délais DNS.
+
+Préparation du serveur
+----------------------
+
+Toutes les opérations sont à faire sur son poste de travail (pas sur le pi) :
+
+* préparer le serveur : `ansible-playbook -i ansible/hosts ansible/site.yml`
+* déployer l'application : `ansible-playbook -i ansible/hosts ansible/app.yml`
+
+Tester dans un container local
+------------------------------
+
+Utile seulement si vous voulez tester le déploiement sans toucher au pi.
+
+* installer `docker`
+* créer le container : `test_container/run`. Si vous l'avez déjà fait il vous dira qu'il existe déjà, vous pouvez :
+    * soit relancer celui qui existe : `docker restart acolock`
+    * soit supprimer l'ancien et recommencer : `docker rm -f acolock`
+
+Pour tester le déploiement il faut lancer les commandes `ansible` avec `-i ansible/test_hosts` au lieu de `-i ansible/hosts`.
+
+Puis pour se connecter :
+* en ssh : `ssh -p 3022 pi@localhost`
+* en http : http://localhost:3080/
+* en https : http://localhost:3443/
+
 Dépendances pour le scan de QR Code
 -----------------------------------
 
@@ -39,32 +78,24 @@ Dépendances pour le scan de QR Code
 * `pip install pyzbar`
 
 
-Dépendances pour le back
-------------------------
-
-* `apt-get install nginx`
-
-Création du certificat pour l'HTTPS :
-
-* sur le compte OVH activer le mode développeur dans les paramètres avancés
-* en root sur le pi (`sudo -s`) :
-* `curl https://get.acme.sh | sh`
-* `source ~/.acme.sh/acme.sh.env`
-* suivre les instructions de https://github.com/Neilpang/acme.sh/wiki/How-to-use-OVH-domain-api :
-    * générer une application sur https://eu.api.ovh.com/createApp/
-    * puis sur le pi
-    * `read OVH_AK` et saisir l'application key
-    * `read OVH_AS` et saisir la secret key
-    * `export OVH_AK OVH_AS`
-    * `acme.sh --issue -d acolock.acolab.fr --dns dns_ovh`
-    * suivre le lien indiqué et saisir les identifiants et une durée "Unlimited"
-    * relancer la dernière commande
-* suivre les instructions pour installer le certificat sur nginx (https://github.com/Neilpang/acme.sh#3-install-the-cert-to-apachenginx-etc) :
-    * `acme.sh --install-cert -d acolock.acolab.fr --key-file /root/.acme.sh/acolock.acolab.fr/acolock.acolab.fr.key --fullchain-file /root/.acme.sh/acolock.acolab.fr/fullchain.cer --reloadcmd "service nginx force-reload"`
-
 Configuration de nginx :
 
 En root sur le pi :
 
 * supprimer le site par défaut nginx : `rm /etc/nginx/sites-enabled/default`
 * to be continued
+
+Regénérer les clés API OVH
+--------------------------
+
+Normalement ce n'est nécessaire que si on perd les clés existantes ou qu'il faut les regénérer.
+
+* sur le compte OVH activer le mode développeur dans les paramètres avancés
+* aller sur https://api.ovh.com/createToken/?GET=/domain/zone/acolab.fr/*&POST=/domain/zone/acolab.fr/*&PUT=/domain/zone/acolab.fr/*&GET=/domain/zone/acolab.fr&DELETE=/domain/zone/acolab.fr/record/*
+* saisir l'identifiant et mot de passe du compte OVH ACoLab (RAxx)
+* mettre un nom et description pour le script (ACoLock)
+* mettre "Unlimited"
+* valider
+* lancer `ansible-vault --vault-password-file=ansible/vault_pass.sh edit ansible/ovh_keys.yml`
+* modifer les variables avec les clés fournies par OVH
+

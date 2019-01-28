@@ -18,6 +18,7 @@
     notify:
       - reload systemd
   - meta: flush_handlers
+
   - name: Ensure the latest rsync is installed
     apt:
       name: rsync

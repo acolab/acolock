@@ -1,0 +1,28 @@
+---
+- hosts: pi
+  remote_user: pi
+  become: yes
+  vars_files:
+    - ovh_keys.yml
+
+  tasks:
+  - name: Ensure curl is installed
+    apt:
+      name: curl
+
+  - name: Ensure socat is installed
+    apt:
+      name: socat
+
+  - name: Install acme.sh
+    shell: warn=False curl https://get.acme.sh | sh
+
+  - name: generate certificate
+    environment:
+      OVH_AK: "{{ ovh_application_key }}"
+      OVH_AS: "{{ ovh_application_secret }}"
+      OVH_CK: "{{ ovh_consumer_key }}"
+    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --issue -d acolock.acolab.fr --dns dns_ovh"
+
+  - name: install certificate
+    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d acolock.acolab.fr --key-file /etc/nginx/acolock.acolab.fr.key --fullchain-file /etc/nginx/acolock.acolab.fr.cer --reloadcmd \"service nginx force-reload\""
