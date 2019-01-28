@@ -1,6 +1,6 @@
 [Unit]
 Description=ACoLock Backend
-Requires=acolock.socket
+Requires=acolock_back.socket
 After=network.target
 
 [Service]

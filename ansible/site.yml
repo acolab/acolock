@@ -1,15 +1,72 @@
 ---
+# Inspired by:
+# - http://docs.gunicorn.org/en/stable/deploy.html
 - hosts: pi
   remote_user: pi
+  become: yes
   tasks:
+  - name: Install service config
+    template:
+      src: acolock_back.service
+      dest: /etc/systemd/system/acolock_back.service
+    notify:
+      - reload systemd
+  - name: Install socket config
+    template:
+      src: acolock_back.socket
+      dest: /etc/systemd/system/acolock_back.socket
+    notify:
+      - reload systemd
+  - meta: flush_handlers
+  - name: Ensure the latest rsync is installed
+    apt:
+      name: rsync
+      state: latest
   - name: Ensure the latest nginx is installed
-    become: yes
     apt:
       name: nginx
       state: latest
+  - name: Ensure gunicorn is installed
+    apt:
+      name: gunicorn3
+      state: latest
+  - name: Ensure default nginx site is disabled
+    file:
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+    notify:
+      restart nginx
+  - name: Install acolock nginx config
+    template:
+      src: nginx_config.j2
+      dest: /etc/nginx/conf.d/acolock.conf
+    notify:
+      - restart nginx
+  - name: Create /run/acolock
+    file:
+      path: /run/acolock
+      state: directory
+  - name: Ensure service is running and enabled
+    service:
+      name: acolock_back.service
+      state: started
+      enabled: yes
+  - name: Ensure socket is running and enabled
+    service:
+      name: acolock_back.socket
+      state: started
+      enabled: yes
+
   - name: Ensure nginx service is running and enabled
-    become: yes
     service:
       name: nginx
       state: started
       enabled: yes
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+    - name: reload systemd
+      command: systemctl daemon-reload

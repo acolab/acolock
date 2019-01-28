@@ -1,0 +1,11 @@
+---
+- hosts: pi
+  remote_user: pi
+
+  tasks:
+    - name: build front
+      local_action: command bash -c "cd ../front && yarn && yarn run build"
+    - name: deploy front
+      synchronize:
+        src: ../front/build/
+        dest: /home/pi/front/

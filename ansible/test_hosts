@@ -1,2 +1,2 @@
 [pi]
-localhost:3022
+pi ansible_host=localhost ansible_port=3022
