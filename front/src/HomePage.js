@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import backUrl from './backUrl'
+import credentialStore from './credentialStore'
 
 const styles = theme => ({
   main: {
@@ -52,14 +53,32 @@ const styles = theme => ({
 });
 
 class HomePage extends React.Component {
-  state = {
-    toggling: false,
+  constructor(props) {
+    super(props)
+
+    const {username, password} = credentialStore.load()
+    this.username = username
+    this.password = password
+
+    this.state = {
+      toggling: false,
+    }
   }
 
   onSubmit = (event) => {
     event.preventDefault()
     this.setState({toggling: true})
-    fetch(backUrl("toggle"))
+    const { username, password } = this
+    credentialStore.save({username, password})
+    console.log({username, password})
+    fetch(backUrl("toggle"), {
+      method: "POST",
+      body: JSON.stringify({username, password}),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    })
       .then(response => response.text())
       .then(response => {
         console.log(response)
@@ -69,9 +88,18 @@ class HomePage extends React.Component {
       })
   }
 
+  onUsernameChange = (event, value) => {
+    this.username = event.target.value
+  }
+
+  onPasswordChange = (event, value) => {
+    this.password = event.target.value
+  }
+
   render() {
     const { classes } = this.props
     const { toggling } = this.state
+    const { username, password } = this
 
     return (
       <main className={classes.main}>
@@ -86,11 +114,11 @@ class HomePage extends React.Component {
           <form className={classes.form} onSubmit={this.onSubmit}>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="username">Idenfiant</InputLabel>
-              <Input id="username" name="username" autoComplete="username" autoFocus />
+              <Input id="username" name="username" autoComplete="username" autoFocus onChange={this.onUsernameChange} defaultValue={username} />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="password">Mot de passe</InputLabel>
-              <Input name="password" type="password" id="password" autoComplete="current-password" />
+              <Input name="password" type="password" id="password" autoComplete="current-password" onChange={this.onPasswordChange} defaultValue={password} />
             </FormControl>
             {toggling ?
               <div className={classes.progressContainer}>
