@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -eux
+
+cd back
+./setup_environment
+cd ..
+
+cd front
+yarn
+
