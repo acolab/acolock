@@ -10,6 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import backUrl from './backUrl'
 
 const styles = theme => ({
@@ -42,20 +43,35 @@ const styles = theme => ({
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
+  progress: {
+    marginTop: theme.spacing.unit * 3,
+  },
+  progressContainer: {
+    textAlign: "center",
+  },
 });
 
 class HomePage extends React.Component {
+  state = {
+    toggling: false,
+  }
+
   onSubmit = (event) => {
     event.preventDefault()
-    fetch(backUrl("ping"))
+    this.setState({toggling: true})
+    fetch(backUrl("toggle"))
       .then(response => response.text())
       .then(response => {
         console.log(response)
       })
+      .finally(() => {
+        this.setState({toggling: false})
+      })
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes } = this.props
+    const { toggling } = this.state
 
     return (
       <main className={classes.main}>
@@ -76,15 +92,22 @@ class HomePage extends React.Component {
               <InputLabel htmlFor="password">Mot de passe</InputLabel>
               <Input name="password" type="password" id="password" autoComplete="current-password" />
             </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Actionner la serrure
-            </Button>
+            {toggling ?
+              <div className={classes.progressContainer}>
+                <CircularProgress className={classes.progress}/>
+              </div>
+              :
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                disabled={toggling}
+              >
+                Actionner la serrure
+              </Button>
+            }
           </form>
         </Paper>
       </main>
