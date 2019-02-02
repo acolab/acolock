@@ -7,6 +7,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -50,6 +52,20 @@ const styles = theme => ({
   progressContainer: {
     textAlign: "center",
   },
+  successContainer: {
+    textAlign: "center",
+  },
+  failureContainer: {
+    textAlign: "center",
+  },
+  successAvatar: {
+    margin: `${theme.spacing.unit}px auto`,
+    backgroundColor: theme.palette.primary.main,
+  },
+  failureAvatar: {
+    margin: `${theme.spacing.unit}px auto`,
+    backgroundColor: theme.palette.error.main,
+  },
 });
 
 class HomePage extends React.Component {
@@ -67,7 +83,7 @@ class HomePage extends React.Component {
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.setState({toggling: true})
+    this.setState({toggling: true, success: undefined})
     const { username, password } = this
     credentialStore.save({username, password})
     console.log({username, password})
@@ -81,7 +97,7 @@ class HomePage extends React.Component {
     })
       .then(response => response.text())
       .then(response => {
-        console.log(response)
+        this.setState({success: response === "ok"})
       })
       .finally(() => {
         this.setState({toggling: false})
@@ -98,7 +114,7 @@ class HomePage extends React.Component {
 
   render() {
     const { classes } = this.props
-    const { toggling } = this.state
+    const { toggling, success } = this.state
     const { username, password } = this
 
     return (
@@ -136,6 +152,21 @@ class HomePage extends React.Component {
                 Actionner la serrure
               </Button>
             }
+            { success === true && (
+                <div className={classes.successContainer}>
+                  <Avatar className={classes.successAvatar}>
+                    <ThumbUpAltIcon />
+                  </Avatar>
+                </div>
+            ) }
+            { success === false && (
+                <div className={classes.failureContainer}>
+                  <Avatar className={classes.failureAvatar}>
+                    <ThumbDownAltIcon />
+                  </Avatar>
+                </div>
+            ) }
+
           </form>
         </Paper>
       </main>
