@@ -86,7 +86,6 @@ class HomePage extends React.Component {
     this.setState({toggling: true, success: undefined})
     const { username, password } = this
     credentialStore.save({username, password})
-    console.log({username, password})
     fetch(backUrl("toggle"), {
       method: "POST",
       body: JSON.stringify({username, password}),
