@@ -7,5 +7,6 @@ cd $(dirname $0)
 . venv/bin/activate
 
 export FLASK_ENV=development
-
-gunicorn acolock:app
+export FLASK_APP=acolock
+export FLASK_DEBUG=1
+flask run --port=5100
