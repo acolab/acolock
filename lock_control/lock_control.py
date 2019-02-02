@@ -17,10 +17,10 @@ motor_open_relay = relay4
 open_clutch_relay = relay2
 close_clutch_relay = relay1
 
-step_sensor_pin = 5
+step_sensor_pin = 24
 
-step_turn_timeout = 10
-open_steps = close_steps = 5
+step_turn_timeout = 1
+open_steps = close_steps = 40
 
 def setup_pins():
     for relay in all_relays:
