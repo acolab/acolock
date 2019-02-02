@@ -15,6 +15,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import backUrl from './backUrl'
 import credentialStore from './credentialStore'
+import Grid from '@material-ui/core/Grid'
 
 const styles = theme => ({
   main: {
@@ -81,12 +82,11 @@ class HomePage extends React.Component {
     }
   }
 
-  onSubmit = (event) => {
-    event.preventDefault()
+  sendCommand = (command) => {
     this.setState({toggling: true, success: undefined})
     const { username, password } = this
     credentialStore.save({username, password})
-    fetch(backUrl("toggle"), {
+    fetch(backUrl(command), {
       method: "POST",
       body: JSON.stringify({username, password}),
       headers: {
@@ -101,6 +101,16 @@ class HomePage extends React.Component {
       .finally(() => {
         this.setState({toggling: false})
       })
+  }
+
+  onOpenClick = (event) => {
+    event.preventDefault()
+    this.sendCommand("open")
+  }
+
+  onCloseClick = (event) => {
+    event.preventDefault()
+    this.sendCommand("close")
   }
 
   onUsernameChange = (event, value) => {
@@ -126,7 +136,7 @@ class HomePage extends React.Component {
           <Typography component="h1" variant="h5">
             ACoLock
           </Typography>
-          <form className={classes.form} onSubmit={this.onSubmit}>
+          <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="username">Idenfiant</InputLabel>
               <Input id="username" name="username" autoComplete="username" autoFocus onChange={this.onUsernameChange} defaultValue={username} />
@@ -140,16 +150,34 @@ class HomePage extends React.Component {
                 <CircularProgress className={classes.progress}/>
               </div>
               :
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={toggling}
-              >
-                Actionner la serrure
-              </Button>
+              <Grid container spacing={24}>
+                <Grid item xs={6}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    disabled={toggling}
+                    onClick={this.onOpenClick}
+                  >
+                    Ouvrir
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    className={classes.submit}
+                    disabled={toggling}
+                    onClick={this.onCloseClick}
+                  >
+                    Fermer
+                  </Button>
+                </Grid>
+              </Grid>
             }
             { success === true && (
                 <div className={classes.successContainer}>
