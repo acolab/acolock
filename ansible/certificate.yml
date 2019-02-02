@@ -15,7 +15,9 @@
       name: socat
 
   - name: Install acme.sh
-    shell: warn=False bash -c "[ -e /root/.acme.sh ] || curl https://get.acme.sh | sh"
+    shell: warn=False bash -c "curl https://get.acme.sh | sh"
+    args:
+      creates: /root/.acme.sh
 
   - name: generate certificate
     environment:
