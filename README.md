@@ -13,15 +13,7 @@ Système
 * trouver son IP (`fping -ag 192.168.1.0/24 2>/dev/null` pour lister les ip locales)
 * aller dessus avec `ssh pi@x.x.x.x`, mot de passe `raspberry`
 * changer le mot de passe avec `passwd`
-* changer son nom avec `echo acolock | sudo tee /etc/hostname` et `echo 127.0.1.1	acolock | sudo tee -a /etc/hosts`
-* lui mettre son ip fixe en mettant dans `/etc/dhcpcd.conf` :
-```
-interface eth0
-static ip_address=192.168.1.150/24
-static routers=192.168.1.1
-static domain_name_servers=192.168.1.1 8.8.8.8
-```
-* le redémarrer 
+* changer son nom avec `echo acolock | sudo tee /etc/hostname` et `echo 127.0.1.1	acolock acolock.local | sudo tee -a /etc/hosts`
 
 Wifi
 ----
@@ -31,6 +23,7 @@ Wifi
 * Network Options
 * Wi-fi
 * Saisir le SSID et le mot de passe
+* paramétrer le DHCP pour qu'il lui attribue l'IP 192.168.1.150
 
 Ansible
 -------

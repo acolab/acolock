@@ -1,1 +1,1 @@
-acolock.local
+pi ansible_host=acolock.local acolock_hostname=acolock.acolab.fr acolock_https_port=443
