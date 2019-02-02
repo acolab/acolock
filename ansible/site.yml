@@ -67,8 +67,13 @@
       name: acolock_back.socket
       enabled: yes
 
+  - name: generate dhparams
+    shell: openssl dhparam -out /etc/nginx/dhparam.pem 2048
+    args:
+      creates: /etc/nginx/dhparam.pem
+
   - name: install certificate
-    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d acolock.acolab.fr --key-file /etc/nginx/acolock.acolab.fr.key --fullchain-file /etc/nginx/acolock.acolab.fr.cer --reloadcmd \"systemctl reload nginx\""
+    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d {{ acolock_hostname }} --key-file /etc/nginx/{{ acolock_hostname }}.key --fullchain-file /etc/nginx/{{ acolock_hostname }}.cer --reloadcmd \"systemctl reload nginx\""
 
   handlers:
     - name: restart nginx

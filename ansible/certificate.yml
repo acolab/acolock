@@ -22,4 +22,4 @@
       OVH_AK: "{{ ovh_application_key }}"
       OVH_AS: "{{ ovh_application_secret }}"
       OVH_CK: "{{ ovh_consumer_key }}"
-    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --issue -d acolock.acolab.fr --dns dns_ovh"
+    shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --issue -d {{ acolock_hostname }} --dns dns_ovh"
