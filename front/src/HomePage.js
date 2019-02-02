@@ -7,6 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import Paper from '@material-ui/core/Paper';
@@ -36,7 +37,11 @@ const styles = theme => ({
     alignItems: 'center',
     padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
   },
-  avatar: {
+  avatarOpen: {
+    margin: theme.spacing.unit,
+    backgroundColor: theme.palette.primary.main,
+  },
+  avatarClosed: {
     margin: theme.spacing.unit,
     backgroundColor: theme.palette.secondary.main,
   },
@@ -100,16 +105,23 @@ class HomePage extends React.Component {
       })
       .finally(() => {
         this.setState({toggling: false})
+        this.updateLockState()
       })
   }
 
   onOpenClick = (event) => {
     event.preventDefault()
+    const { lockState } = this.state
+    if (lockState === "open" && !window.confirm("La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?"))
+      return
     this.sendCommand("open")
   }
 
   onCloseClick = (event) => {
     event.preventDefault()
+    const { lockState } = this.state
+    if (lockState === "closed" && !window.confirm("La serrure semble être déjà fermée. Êtes vous sûr\u00a0?"))
+      return
     this.sendCommand("close")
   }
 
@@ -121,17 +133,35 @@ class HomePage extends React.Component {
     this.password = event.target.value
   }
 
+  componentDidMount() {
+    this.timer = setInterval(this.updateLockState, 10000)
+    this.updateLockState()
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer)
+  }
+
+  updateLockState = () => {
+    fetch(backUrl("lock_state"))
+      .then(response => response.text())
+      .then(response => {
+        this.setState({lockState: response})
+      })
+  }
+
   render() {
     const { classes } = this.props
-    const { toggling, success } = this.state
+    const { toggling, success, lockState } = this.state
     const { username, password } = this
 
     return (
       <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
+          <Avatar className={lockState === "open" ? classes.avatarOpen : classes.avatarClosed}>
+            { lockState === "open" && <LockOpenOutlinedIcon /> }
+            { lockState === "closed" && <LockOutlinedIcon /> }
           </Avatar>
           <Typography component="h1" variant="h5">
             ACoLock

@@ -76,20 +76,31 @@ def toggle_action():
 def open_action():
     if request.method == "OPTIONS":
         return ""
-    if request.method == "POST":
-        if valid_credentials(request.json):
-            open_lock()
-            return "ok"
-        else:
-            return "fail"
+
+    if valid_credentials(request.json):
+        open_lock()
+        return "ok"
+    else:
+        return "fail"
 
 @app.route("/back/close", methods=["POST", "OPTIONS"])
 def close_action():
     if request.method == "OPTIONS":
         return ""
-    if request.method == "POST":
-        if valid_credentials(request.json):
-            close_lock()
-            return "ok"
-        else:
-            return "fail"
+
+    if valid_credentials(request.json):
+        close_lock()
+        return "ok"
+    else:
+        return "fail"
+
+@app.route("/back/lock_state", methods=["GET", "OPTIONS"])
+def lock_state_action():
+    if request.method == "OPTIONS":
+        return ""
+
+    state = get_lock_state()
+    if state.get("open", False):
+        return "open"
+    else:
+        return "closed"
