@@ -4,7 +4,7 @@
 
   tasks:
   - name: build front
-    local_action: command bash -c "cd ../front && yarn && yarn run build"
+    local_action: command bash -c "cd ../front && yarn && REACT_APP_BACK_HOST='' yarn run build"
   - name: deploy front
     synchronize:
       src: ../front/build/
