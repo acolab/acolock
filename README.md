@@ -42,7 +42,7 @@ Création du certificat HTTPS sur le pi
 
 Vous devez pouvoir déchiffrer `ansible/vault_passphrase.gpg` pour créer le certificat. Essayez avec `ansible/vault_pass.sh`. Si ça ne fonctionne pas demandez à l'une des personnes autorisées de vous aider. Vous pouvez avoir la liste des clés autorisées avec la commande `gpg --batch --list-packets ansible/vault_passphrase.gpg`.
 
-* `ansible-playbook --vault-password-file=ansible/vault_pass.sh -i ansible/hosts ansible/certificate.yml`
+* `ansible-playbook -i ansible/hosts ansible/certificate.yml`
 
 La création du certificat prend 2-3 minutes à cause des délais DNS.
 
@@ -101,6 +101,6 @@ Normalement ce n'est nécessaire que si on perd les clés existantes ou qu'il fa
 * mettre un nom et description pour le script (ACoLock)
 * mettre "Unlimited"
 * valider
-* lancer `ansible-vault --vault-password-file=ansible/vault_pass.sh edit ansible/ovh_keys.yml`
+* lancer `ansible-vault edit ansible/ovh_keys.yml`
 * modifer les variables avec les clés fournies par OVH
 
