@@ -9,6 +9,10 @@ const credentialStore = {
       return {}
     return JSON.parse(rawCredentials)
   },
+
+  clear: () => {
+    localStorage.removeItem("credentials")
+  }
 }
 
 export default credentialStore

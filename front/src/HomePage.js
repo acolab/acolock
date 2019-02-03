@@ -4,6 +4,8 @@ import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import FormControl from '@material-ui/core/FormControl'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
 import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
@@ -84,13 +86,20 @@ class HomePage extends React.Component {
 
     this.state = {
       toggling: false,
+      remember: (username !== undefined),
     }
   }
 
   sendCommand = (command) => {
     this.setState({toggling: true, success: undefined})
     const { username, password } = this
-    credentialStore.save({username, password})
+    const { remember } = this.state
+
+    if (remember)
+      credentialStore.save({username, password})
+    else
+      credentialStore.clear()
+
     fetch(backUrl(command), {
       method: "POST",
       body: JSON.stringify({username, password}),
@@ -133,6 +142,10 @@ class HomePage extends React.Component {
     this.password = event.target.value
   }
 
+  onRememberChange = (event, checked) => {
+    this.setState({remember: checked})
+  }
+
   componentDidMount() {
     this.timer = setInterval(this.updateLockState, 10000)
     this.updateLockState()
@@ -152,7 +165,7 @@ class HomePage extends React.Component {
 
   render() {
     const { classes } = this.props
-    const { toggling, success, lockState } = this.state
+    const { toggling, success, lockState, remember } = this.state
     const { username, password } = this
 
     return (
@@ -175,6 +188,10 @@ class HomePage extends React.Component {
               <InputLabel htmlFor="password">Mot de passe</InputLabel>
               <Input name="password" type="password" id="password" autoComplete="current-password" onChange={this.onPasswordChange} defaultValue={password} />
             </FormControl>
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" onChange={this.onRememberChange} checked={remember} />}
+              label="Enregistrer"
+            />
             {toggling ?
               <div className={classes.progressContainer}>
                 <CircularProgress className={classes.progress}/>
