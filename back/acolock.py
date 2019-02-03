@@ -166,14 +166,32 @@ def update_user_action():
 
     updates = request.json["user"]
 
-    username = updates["username"]
-    password = updates["password"]
-    admin = updates["admin"]
+    username = updates.get("username", "")
+    attributes = updates["attributes"]
+    new_username = attributes.get("username", None)
+    password = attributes.get("password", "")
+    admin = attributes.get("admin", None)
 
-    code = codes[username]
-    if updates["password"] != "":
-        code["password"] = updates["password"]
-    code["admin"] = updates["admin"]
+    if username == "":
+        if new_username == "":
+            return json.dumps({'success': False, 'error': "invalid_username"})
+
+        if new_username in codes:
+            return json.dumps({'success': False, 'error': "username_already_exists"})
+        code = {}
+        codes[new_username] = code
+    else:
+        code = codes[username]
+
+    if password != "":
+        code["password"] = password
+
+    if admin != None:
+        code["admin"] = admin
+
+    if "password" not in code or code["password"] == "":
+        return json.dumps({'success': False, 'error': "empty_password"})
+
     save_codes(codes)
 
     return json.dumps({'success': True, 'users': codes})

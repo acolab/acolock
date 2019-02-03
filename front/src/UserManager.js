@@ -10,6 +10,10 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
+import AddIcon from '@material-ui/icons/Add'
+import PersonIcon from '@material-ui/icons/Person'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import errorTranslator from './errorTranslator'
 
 import backUrl from './backUrl'
 
@@ -21,12 +25,13 @@ class User extends React.Component {
   constructor(props) {
     super(props)
 
-    const { username, user } = props
+    const { username, user, newUser } = props
 
     this.state = {
       open: false,
-      admin: user.admin,
+      admin: user && user.admin,
       password: "",
+      loading: false,
     }
   }
 
@@ -34,8 +39,10 @@ class User extends React.Component {
     const { user } = this.props
     this.setState({
       open: true,
-      admin: user.admin,
+      admin: user && user.admin,
       password: "",
+      username: "",
+      loading: false,
     })
   }
 
@@ -52,12 +59,23 @@ class User extends React.Component {
     this.setState({password: event.target.value})
   }
 
+  handleUsernameChange = (event) => {
+    this.setState({username: event.target.value})
+  }
+
   handleSubmit = (event) => {
     event.stopPropagation()
     const { username } = this.props
-    const { admin, password } = this.state
-    this.props.onChange(username, {admin, password})
-    this.setState({open: false, password: ""})
+    const { admin, password, username: newUsername } = this.state
+    this.setState({loading: true})
+    this.props.onChange(username, {admin, password, username: newUsername})
+      .then(() => {
+        this.setState({open: false, password: ""})
+      })
+      .catch((error) => {
+        alert(errorTranslator(error) || error)
+        this.setState({loading: false})
+      })
   }
 
   handleDialogClick = (event) => {
@@ -65,20 +83,34 @@ class User extends React.Component {
   }
 
   render() {
-    const { username, user } = this.props
-    const { open, admin, password } = this.state
+    const { username, user, newUser } = this.props
+    const { open, admin, password, username: newUsername, loading } = this.state
 
     return (
       <ListItem button onClick={this.handleItemClick}>
-        <ListItemText primary={username}/>
+        <ListItemIcon>
+         { newUser ? <AddIcon /> : <PersonIcon /> }
+        </ListItemIcon>
+        <ListItemText primary={newUser ? "Nouvel utilisateur" : username}/>
         <Dialog
           open={open}
           onClose={this.handleClose}
           onClick={this.handleDialogClick}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">{username}</DialogTitle>
+          <DialogTitle id="form-dialog-title">{newUser ? "Nouvel utilisateur" : username}</DialogTitle>
           <DialogContent>
+            { newUser && (
+              <TextField
+                margin="dense"
+                label="Nom d'utilisateur"
+                type="text"
+                fullWidth
+                onChange={this.handleUsernameChange}
+                value={newUsername}
+                autoComplete="username"
+              />
+            )}
             <TextField
               margin="dense"
               id="password"
@@ -102,7 +134,7 @@ class User extends React.Component {
             <Button onClick={this.handleClose} color="primary">
               Annuler
             </Button>
-            <Button onClick={this.handleSubmit} color="primary">
+            <Button disabled={loading} onClick={this.handleSubmit} color="primary">
               Enregistrer
             </Button>
           </DialogActions>
@@ -115,6 +147,7 @@ class User extends React.Component {
 const UserList = ({users, onUserChange}) => {
   return (
     <List component="nav">
+      <User key="new-user" newUser onChange={onUserChange} />
       {Object.keys(users).map((key) => (
         <User key={key} username={key} user={users[key]} onChange={onUserChange} />
       ))}
@@ -158,31 +191,37 @@ export default class UserManager extends React.Component {
   handleUserChange = (username, attributes) => {
     this.setState({ open: true, loading: true, error: undefined })
     const {username: currentUserUsername, password: currentUserPassword} = this.props
-    fetch(backUrl("update_user"), {
-      method: "POST",
-      body: JSON.stringify({
-        username: currentUserUsername,
-        password: currentUserPassword,
-        user: {
-          username,
-          ...attributes,
+    return new Promise((resolve, reject) => {
+      fetch(backUrl("update_user"), {
+        method: "POST",
+        body: JSON.stringify({
+          username: currentUserUsername,
+          password: currentUserPassword,
+          user: {
+            username,
+            attributes,
+          },
+        }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-      }),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      })
+        .then(response => response.json())
+        .then(response => {
+          if (response.success) {
+            this.setState({loading: false, users: response.users})
+            resolve()
+          } else {
+            this.setState({loading: false})
+            reject(response.error)
+          }
+        })
+        .catch(error => {
+          this.setState({loading: false})
+          reject(error)
+        })
     })
-      .then(response => response.json())
-      .then(response => {
-        if (response.success)
-          this.setState({loading: false, users: response.users})
-        else
-          this.setState({loading: false, error: response.error})
-      })
-      .catch(error => {
-        this.setState({loading: false, error: error.message})
-      })
   }
 
   render() {
@@ -211,7 +250,7 @@ export default class UserManager extends React.Component {
             )}
             { error && (
               <DialogContentText>
-                {error === "invalid_credentials" ? "Accès interdit" : error}
+                {errorTranslator(error)}
               </DialogContentText>
             )}
             { users && (
@@ -220,13 +259,8 @@ export default class UserManager extends React.Component {
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
-              Annuler
+              Fermer
             </Button>
-            { users && (
-              <Button onClick={this.handleSubmit} color="primary">
-                Enregistrer
-              </Button>
-            )}
           </DialogActions>
         </Dialog>
       </div>

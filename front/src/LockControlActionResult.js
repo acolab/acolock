@@ -10,6 +10,7 @@ import classnames from 'classnames'
 import ErrorIcon from '@material-ui/icons/Error'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import green from '@material-ui/core/colors/green'
+import errorTranslator from './errorTranslator'
 
 const variantIcon = {
   success: CheckCircleIcon,
@@ -59,14 +60,12 @@ class InvalidCredentialsNotification extends React.Component {
     switch (result) {
       case "ok":
         return "Opération effectuée"
-      case "invalid_credentials":
-        return "Identifiants invalides"
-      case "server_error":
-        return "Erreur serveur"
-      case "lock_control_failed":
-        return "Le controle de la serrure a échoué"
       default:
-        return <em>{result}</em>
+        const translation = errorTranslator(result)
+        if (translation)
+          return translation
+        else
+          return <em>{result}</em>
     }
   }
 
