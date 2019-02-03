@@ -4,8 +4,9 @@ import subprocess
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ilock import ILock, ILockException
-import hmac
 import json
+import bcrypt
+
 app = Flask(__name__)
 
 if app.config["ENV"] == "development":
@@ -24,6 +25,7 @@ def load_codes():
         print("Warning: no codes.yml found")
         return {}
 
+    changed = False
     if isinstance(codes, list):
         old_codes = codes
         codes = {}
@@ -31,10 +33,27 @@ def load_codes():
             username = code["username"]
             del code["username"]
             codes[username] = code
+        changed = True
+
+    if hash_passwords(codes):
+        changed = True
+
+    if changed:
         save_codes(codes)
 
     return codes
 
+def hash_passwords(codes):
+    changed = False
+    for username, code in codes.items():
+        password = code["password"]
+        if password[0] != "$":
+            code["password"] = hash_password(password)
+            changed = True
+    return changed
+
+def hash_password(password):
+    return bcrypt.hashpw(password, bcrypt.gensalt(12))
 def valid_credentials(credentials, admin_required = False):
     codes = load_codes()
 
@@ -51,7 +70,7 @@ def valid_credentials(credentials, admin_required = False):
         return False
 
     password = credentials["password"]
-    return hmac.compare_digest(password, code["password"])
+    return bcrypt.checkpw(password, code["password"])
 
 def get_lock_state():
     try:
@@ -184,7 +203,7 @@ def update_user_action():
         code = codes[username]
 
     if password != "":
-        code["password"] = password
+        code["password"] = hash_password(password)
 
     if admin != None:
         code["admin"] = admin

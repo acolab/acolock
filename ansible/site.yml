@@ -37,6 +37,16 @@
       name: python3-venv
       state: latest
 
+  - name: Ensure python3-dev is installed
+    apt:
+      name: python3-dev
+    tags:
+      - wip
+
+  - name: Ensure build-essential is installed
+    apt:
+      name: build-essential
+
   - name: Ensure the latest nginx is installed
     apt:
       name: nginx
