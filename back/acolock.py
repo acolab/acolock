@@ -3,10 +3,17 @@ import yaml
 import subprocess
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from ilock import ILock, ILockException
+import hmac
 app = Flask(__name__)
 
 if app.config["ENV"] == "development":
     CORS(app, resources={r"/back/*": {"origins": "*"}})
+
+def save_codes(codes):
+    with ILock('codes_write'):
+        with open('codes.yml', 'w') as outfile:
+            yaml.dump(codes, outfile, default_flow_style=False)
 
 def valid_credentials(credentials):
     try:
@@ -16,13 +23,23 @@ def valid_credentials(credentials):
         print("Warning: no codes.yml found")
         return False
 
-    found = False
-    for code in codes:
-        username_found = code["username"] == credentials["username"]
-        password_found = code["password"] == credentials["password"]
-        if username_found and password_found:
-            found = True
-    return found
+    if isinstance(codes, list):
+        old_codes = codes
+        codes = {}
+        for code in old_codes:
+            username = code["username"]
+            del code["username"]
+            codes[username] = code
+        save_codes(codes)
+
+    username = credentials["username"]
+    if username not in codes:
+        return False
+
+    code = codes[username]
+
+    password = credentials["password"]
+    return hmac.compare_digest(password, code["password"])
 
 def get_lock_state():
     try:
