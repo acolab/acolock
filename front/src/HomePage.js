@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
-import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import withStyles from '@material-ui/core/styles/withStyles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Avatar from '@material-ui/core/Avatar'
+import Button from '@material-ui/core/Button'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import FormControl from '@material-ui/core/FormControl'
+import Input from '@material-ui/core/Input'
+import InputLabel from '@material-ui/core/InputLabel'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined'
+import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt'
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import withStyles from '@material-ui/core/styles/withStyles'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import backUrl from './backUrl'
 import credentialStore from './credentialStore'
 import Grid from '@material-ui/core/Grid'
@@ -72,7 +72,7 @@ const styles = theme => ({
     margin: `${theme.spacing.unit}px auto`,
     backgroundColor: theme.palette.error.main,
   },
-});
+})
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -125,11 +125,11 @@ class HomePage extends React.Component {
     this.sendCommand("close")
   }
 
-  onUsernameChange = (event, value) => {
+  onUsernameChange = (event) => {
     this.username = event.target.value
   }
 
-  onPasswordChange = (event, value) => {
+  onPasswordChange = (event) => {
     this.password = event.target.value
   }
 
@@ -183,7 +183,6 @@ class HomePage extends React.Component {
               <Grid container spacing={24}>
                 <Grid item xs={6}>
                   <Button
-                    type="submit"
                     fullWidth
                     variant="contained"
                     color="primary"
@@ -196,7 +195,6 @@ class HomePage extends React.Component {
                 </Grid>
                 <Grid item xs={6}>
                   <Button
-                    type="submit"
                     fullWidth
                     variant="contained"
                     color="secondary"
@@ -227,12 +225,12 @@ class HomePage extends React.Component {
           </form>
         </Paper>
       </main>
-    );
+    )
   }
 }
 
 HomePage.propTypes = {
   classes: PropTypes.object.isRequired,
-};
+}
 
-export default withStyles(styles)(HomePage);
+export default withStyles(styles)(HomePage)
