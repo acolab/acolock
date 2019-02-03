@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ilock import ILock, ILockException
 import hmac
+import json
 app = Flask(__name__)
 
 if app.config["ENV"] == "development":
@@ -15,13 +16,13 @@ def save_codes(codes):
         with open('codes.yml', 'w') as outfile:
             yaml.dump(codes, outfile, default_flow_style=False)
 
-def valid_credentials(credentials):
+def load_codes():
     try:
         with open("codes.yml", 'r') as stream:
             codes = yaml.load(stream)
     except FileNotFoundError:
         print("Warning: no codes.yml found")
-        return False
+        return {}
 
     if isinstance(codes, list):
         old_codes = codes
@@ -32,11 +33,19 @@ def valid_credentials(credentials):
             codes[username] = code
         save_codes(codes)
 
+    return codes
+
+def valid_credentials(credentials, admin_required = False):
+    codes = load_codes()
+
     username = credentials["username"]
     if username not in codes:
         return False
 
     code = codes[username]
+
+    if admin_required and code.get("admin", False) != True:
+        return False
 
     password = credentials["password"]
     return hmac.compare_digest(password, code["password"])
@@ -128,3 +137,14 @@ def lock_state_action():
         return "open"
     else:
         return "closed"
+
+@app.route("/back/codes", methods=["GET", "OPTIONS"])
+def codes_action():
+    if request.method == "OPTIONS":
+        return ""
+
+    if not valid_credentials(request.json, admin_required = True):
+        return "invalid_credentials"
+
+    codes = load_codes()
+    return json.dumps(codes)
