@@ -2,6 +2,7 @@
 
 import time
 import sys
+from ilock import ILock, ILockException
 
 def lock_control(command):
     import RPi.GPIO as GPIO
@@ -106,4 +107,11 @@ def lock_control(command):
     GPIO.cleanup()
 
 command = sys.argv[1]
-lock_control(command)
+
+try:
+    with ILock('lock_control', timeout=1):
+        lock_control(command)
+
+except ILockException:
+    print("lock control is already running")
+    sys.exit(1)
