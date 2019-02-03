@@ -11,26 +11,37 @@
       dest: /etc/systemd/system/acolock_back.service
     notify:
       - reload systemd
+    tags:
+      - back
+
   - name: Install socket config
     template:
       src: acolock_back.socket
       dest: /etc/systemd/system/acolock_back.socket
     notify:
       - reload systemd
+    tags:
+      - back
+
   - meta: flush_handlers
+    tags:
+      - back
 
   - name: Ensure the latest rsync is installed
     apt:
       name: rsync
       state: latest
+
   - name: Ensure the latest python3-venv is installed
     apt:
       name: python3-venv
       state: latest
+
   - name: Ensure the latest nginx is installed
     apt:
       name: nginx
       state: latest
+
   - name: Ensure nginx service is running and enabled
     service:
       name: nginx
