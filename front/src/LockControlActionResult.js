@@ -63,6 +63,8 @@ class InvalidCredentialsNotification extends React.Component {
         return "Identifiants invalides"
       case "server_error":
         return "Erreur serveur"
+      case "lock_control_failed":
+        return "Le controle de la serrure a échoué"
       default:
         return <em>{result}</em>
     }

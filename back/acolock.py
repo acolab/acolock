@@ -42,22 +42,25 @@ def lock_control(open):
     else:
         command = "close"
     print("Command: " + command)
-    subprocess.run(["venv/bin/python", "lock_control.py", command])
+    result = subprocess.run(["venv/bin/python", "lock_control.py", command])
+    if result.returncode != 0:
+        return False
     state = get_lock_state()
     state["open"] = open
     save_lock_state(state)
+    return True
 
 def toggle_lock():
     state = get_lock_state()
     open = state.get("open", False)
     new_open = (not open)
-    lock_control(new_open)
+    return lock_control(new_open)
 
 def open_lock():
-    lock_control(True)
+    return lock_control(True)
 
 def close_lock():
-    lock_control(False)
+    return lock_control(False)
 
 @app.route("/back/toggle", methods=["POST", "OPTIONS"])
 def toggle_action():
@@ -67,8 +70,10 @@ def toggle_action():
     if not valid_credentials(request.json):
         return "invalid_credentials"
 
-    toggle_lock()
-    return "ok"
+    if toggle_lock():
+        return "ok"
+    else:
+        return "lock_control_failed"
 
 @app.route("/back/open", methods=["POST", "OPTIONS"])
 def open_action():
@@ -78,8 +83,10 @@ def open_action():
     if not valid_credentials(request.json):
         return "invalid_credentials"
 
-    open_lock()
-    return "ok"
+    if open_lock():
+        return "ok"
+    else:
+        return "lock_control_failed"
 
 @app.route("/back/close", methods=["POST", "OPTIONS"])
 def close_action():
@@ -89,8 +96,10 @@ def close_action():
     if not valid_credentials(request.json):
         return "invalid_credentials"
 
-    close_lock()
-    return "ok"
+    if close_lock():
+        return "ok"
+    else:
+        return "lock_control_failed"
 
 @app.route("/back/lock_state", methods=["GET", "OPTIONS"])
 def lock_state_action():
