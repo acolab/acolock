@@ -34,16 +34,8 @@
 
   - name: create lock control directory
     file:
-      path: /home/pi/lock_control/lock_control.py
-      state: directory
-
-  - name: install lock control
-    copy:
-      src: ../lock_control/lock_control.py
-      dest: /home/pi/lock_control/
-      mode: "755"
-    tags:
-      - lock_control
+      path: /home/pi/lock_control
+      state: absent
 
   - name: Ensure socket is running
     become: yes

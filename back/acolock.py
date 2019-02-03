@@ -43,9 +43,9 @@ def lock_control(open):
         command = "close"
     print("Command: " + command)
     if app.config["ENV"] == "development":
-        subprocess.run(["echo", "../lock_control/lock_control.py", command])
+        subprocess.run(["echo", "venv/bin/python", "lock_control.py", command])
     else:
-        subprocess.run(["../lock_control/lock_control.py", command])
+        subprocess.run(["venv/bin/python", "lock_control.py", command])
     state = get_lock_state()
     state["open"] = open
     save_lock_state(state)

@@ -2,7 +2,6 @@
 
 import time
 import sys
-from ilock import ILock
 
 def lock_control(command):
     import RPi.GPIO as GPIO
@@ -106,4 +105,5 @@ def lock_control(command):
 
     GPIO.cleanup()
 
-lock_control(sys.argv[1])
+command = sys.argv[1]
+lock_control(command)
