@@ -9,8 +9,11 @@ User=pi
 Group=pi
 RuntimeDirectory=acolock
 WorkingDirectory=/home/pi/back
-ExecStart=/home/pi/back/venv/bin/gunicorn --pid /run/acolock/pid \
-          --bind unix:/run/acolock/socket acolock:app
+ExecStart=/home/pi/back/venv/bin/gunicorn \
+          --pid /run/acolock/pid \
+          --bind unix:/run/acolock/socket \
+          --workers 4 \
+          acolock:app
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 PrivateTmp=true
