@@ -114,4 +114,4 @@ try:
 
 except ILockException:
     print("lock control is already running")
-    sys.exit(1)
+    sys.exit(2)
