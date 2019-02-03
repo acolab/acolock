@@ -19,6 +19,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import backUrl from './backUrl'
 import credentialStore from './credentialStore'
 import Grid from '@material-ui/core/Grid'
+import LockControlActionResult from './LockControlActionResult'
 
 const styles = theme => ({
   main: {
@@ -91,7 +92,7 @@ class HomePage extends React.Component {
   }
 
   sendCommand = (command) => {
-    this.setState({toggling: true, success: undefined})
+    this.setState({toggling: true, success: undefined, lastActionResult: undefined})
     const { username, password } = this
     const { remember } = this.state
 
@@ -110,7 +111,7 @@ class HomePage extends React.Component {
     })
       .then(response => response.text())
       .then(response => {
-        this.setState({success: response === "ok"})
+        this.setState({success: response === "ok", lastActionResult: response})
       })
       .finally(() => {
         this.setState({toggling: false})
@@ -165,7 +166,13 @@ class HomePage extends React.Component {
 
   render() {
     const { classes } = this.props
-    const { toggling, success, lockState, remember } = this.state
+    const {
+      toggling,
+      success,
+      lockState,
+      remember,
+      lastActionResult,
+    } = this.state
     const { username, password } = this
 
     return (
@@ -224,21 +231,7 @@ class HomePage extends React.Component {
                 </Grid>
               </Grid>
             }
-            { success === true && (
-                <div className={classes.successContainer}>
-                  <Avatar className={classes.successAvatar}>
-                    <ThumbUpAltIcon />
-                  </Avatar>
-                </div>
-            ) }
-            { success === false && (
-                <div className={classes.failureContainer}>
-                  <Avatar className={classes.failureAvatar}>
-                    <ThumbDownAltIcon />
-                  </Avatar>
-                </div>
-            ) }
-
+            <LockControlActionResult result={lastActionResult} />
           </form>
         </Paper>
       </main>
