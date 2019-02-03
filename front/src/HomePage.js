@@ -113,6 +113,9 @@ class HomePage extends React.Component {
       .then(response => {
         this.setState({success: response === "ok", lastActionResult: response})
       })
+      .catch(error => {
+        this.setState({success: false, lastActionResult: "server_error"})
+      })
       .finally(() => {
         this.setState({toggling: false})
         this.updateLockState()
