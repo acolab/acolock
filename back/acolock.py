@@ -62,42 +62,38 @@ def open_lock():
 def close_lock():
     lock_control(False)
 
-@app.route("/back/ping")
-def ping():
-    return "pong!"
-
 @app.route("/back/toggle", methods=["POST", "OPTIONS"])
 def toggle_action():
     if request.method == "OPTIONS":
         return ""
-    if request.method == "POST":
-        if valid_credentials(request.json):
-            toggle_lock()
-            return "ok"
-        else:
-            return "fail"
+
+    if not valid_credentials(request.json):
+        return "invalid_credentials"
+
+    toggle_lock()
+    return "ok"
 
 @app.route("/back/open", methods=["POST", "OPTIONS"])
 def open_action():
     if request.method == "OPTIONS":
         return ""
 
-    if valid_credentials(request.json):
-        open_lock()
-        return "ok"
-    else:
-        return "fail"
+    if not valid_credentials(request.json):
+        return "invalid_credentials"
+
+    open_lock()
+    return "ok"
 
 @app.route("/back/close", methods=["POST", "OPTIONS"])
 def close_action():
     if request.method == "OPTIONS":
         return ""
 
-    if valid_credentials(request.json):
-        close_lock()
-        return "ok"
-    else:
-        return "fail"
+    if not valid_credentials(request.json):
+        return "invalid_credentials"
+
+    close_lock()
+    return "ok"
 
 @app.route("/back/lock_state", methods=["GET", "OPTIONS"])
 def lock_state_action():
