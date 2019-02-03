@@ -20,9 +20,12 @@
       - restart back
     tags:
       - back
+      - back_setup
 
   - name: setup back
     shell: /home/pi/back/setup_environment
+    tags:
+      - back_setup
 
   - name: create lock control directory
     file:
