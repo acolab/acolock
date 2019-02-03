@@ -44,6 +44,9 @@ def valid_credentials(credentials, admin_required = False):
 
     code = codes[username]
 
+    if code["password"] == "":
+        return False
+
     if admin_required and code.get("admin", False) != True:
         return False
 
@@ -138,13 +141,39 @@ def lock_state_action():
     else:
         return "closed"
 
-@app.route("/back/codes", methods=["GET", "OPTIONS"])
+@app.route("/back/users", methods=["POST", "OPTIONS"])
 def codes_action():
     if request.method == "OPTIONS":
         return ""
 
     if not valid_credentials(request.json, admin_required = True):
-        return "invalid_credentials"
+        return json.dumps({'success': False, 'error': "invalid_credentials"})
 
     codes = load_codes()
-    return json.dumps(codes)
+    for username, user in codes.items():
+        del user["password"]
+    return json.dumps({'success': True, 'users': codes})
+
+@app.route("/back/update_user", methods=["POST", "OPTIONS"])
+def update_user_action():
+    if request.method == "OPTIONS":
+        return ""
+
+    if not valid_credentials(request.json, admin_required = True):
+        return json.dumps({'success': False, 'error': "invalid_credentials"})
+
+    codes = load_codes()
+
+    updates = request.json["user"]
+
+    username = updates["username"]
+    password = updates["password"]
+    admin = updates["admin"]
+
+    code = codes[username]
+    if updates["password"] != "":
+        code["password"] = updates["password"]
+    code["admin"] = updates["admin"]
+    save_codes(codes)
+
+    return json.dumps({'success': True, 'users': codes})

@@ -10,16 +10,20 @@ import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined'
+import MenuIcon from '@material-ui/icons/Menu'
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt'
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import withStyles from '@material-ui/core/styles/withStyles'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 import backUrl from './backUrl'
 import credentialStore from './credentialStore'
 import Grid from '@material-ui/core/Grid'
 import LockControlActionResult from './LockControlActionResult'
+import UserManager from './UserManager'
 
 const styles = theme => ({
   main: {
@@ -75,25 +79,67 @@ const styles = theme => ({
     margin: `${theme.spacing.unit}px auto`,
     backgroundColor: theme.palette.error.main,
   },
+  manageCodes: {
+    textAlign: "right",
+    marginTop: theme.spacing.unit * 2,
+  },
 })
+
+class HomeMenuButton extends React.Component {
+  state = {
+    anchorEl: null,
+  }
+
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget })
+  }
+
+  handleClose = () => {
+    this.setState({ anchorEl: null })
+  }
+
+  render() {
+    const { anchorEl } = this.state
+
+    return (
+      <div>
+        <Button
+          onClick={this.onMenuClick}
+        >
+          <MenuIcon/>
+        </Button>
+        <Menu
+          id="home-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={this.handleClose}
+        >
+          <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+          <MenuItem onClick={this.handleClose}>My account</MenuItem>
+          <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+        </Menu>
+      </div>
+    )
+  }
+}
 
 class HomePage extends React.Component {
   constructor(props) {
     super(props)
 
     const {username, password} = credentialStore.load()
-    this.username = username
-    this.password = password
 
     this.state = {
       toggling: false,
       remember: (username !== undefined),
+      username,
+      password,
     }
   }
 
   sendCommand = (command) => {
     this.setState({toggling: true, success: undefined, lastActionResult: undefined})
-    const { username, password } = this
+    const { username, password } = this.state
     const { remember } = this.state
 
     if (remember)
@@ -139,11 +185,11 @@ class HomePage extends React.Component {
   }
 
   onUsernameChange = (event) => {
-    this.username = event.target.value
+    this.setState({username: event.target.value})
   }
 
   onPasswordChange = (event) => {
-    this.password = event.target.value
+    this.setState({password: event.target.value})
   }
 
   onRememberChange = (event, checked) => {
@@ -167,6 +213,10 @@ class HomePage extends React.Component {
       })
   }
 
+  onMenuClick = () => {
+    this.setState({menuOpen: true})
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -175,8 +225,9 @@ class HomePage extends React.Component {
       lockState,
       remember,
       lastActionResult,
+      credentialsManagerOpen,
     } = this.state
-    const { username, password } = this
+    const { username, password } = this.state
 
     return (
       <main className={classes.main}>
@@ -192,11 +243,11 @@ class HomePage extends React.Component {
           <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="username">Idenfiant</InputLabel>
-              <Input id="username" name="username" autoComplete="username" autoFocus onChange={this.onUsernameChange} defaultValue={username} />
+              <Input id="username" name="username" autoComplete="username" autoFocus onChange={this.onUsernameChange} value={username} />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="password">Mot de passe</InputLabel>
-              <Input name="password" type="password" id="password" autoComplete="current-password" onChange={this.onPasswordChange} defaultValue={password} />
+              <Input name="password" type="password" id="password" autoComplete="current-password" onChange={this.onPasswordChange} value={password} />
             </FormControl>
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" onChange={this.onRememberChange} checked={remember} />}
@@ -207,32 +258,37 @@ class HomePage extends React.Component {
                 <CircularProgress className={classes.progress}/>
               </div>
               :
-              <Grid container spacing={24}>
-                <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    disabled={toggling}
-                    onClick={this.onOpenClick}
-                  >
-                    Ouvrir
-                  </Button>
+              <div>
+                <Grid container spacing={24}>
+                  <Grid item xs={6}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      className={classes.submit}
+                      disabled={toggling}
+                      onClick={this.onOpenClick}
+                    >
+                      Ouvrir
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      className={classes.submit}
+                      disabled={toggling}
+                      onClick={this.onCloseClick}
+                    >
+                      Fermer
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="secondary"
-                    className={classes.submit}
-                    disabled={toggling}
-                    onClick={this.onCloseClick}
-                  >
-                    Fermer
-                  </Button>
-                </Grid>
-              </Grid>
+                <div className={classes.manageCodes}>
+                  <UserManager {...{username, password}} />
+                </div>
+              </div>
             }
             <LockControlActionResult result={lastActionResult} />
           </form>
