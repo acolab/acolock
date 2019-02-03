@@ -9,8 +9,13 @@ if app.config["ENV"] == "development":
     CORS(app, resources={r"/back/*": {"origins": "*"}})
 
 def valid_credentials(credentials):
-    with open("codes.yml", 'r') as stream:
-        codes = yaml.load(stream)
+    try:
+        with open("codes.yml", 'r') as stream:
+            codes = yaml.load(stream)
+    except FileNotFoundError:
+        print("Warning: no codes.yml found")
+        return False
+
     found = False
     for code in codes:
         username_found = code["username"] == credentials["username"]
