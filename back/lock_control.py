@@ -47,7 +47,9 @@ def lock_control(command):
     def wait_for_steps(count):
         last_status = step_status()
         last_status_change_time = time.time()
+
         while count > 0:
+            print("steps remaining: " + str(count))
             status = step_status()
             now = time.time()
             if status != last_status:
@@ -59,7 +61,7 @@ def lock_control(command):
                 print("wait_for_steps timeout")
                 return False
 
-            time.sleep(0.01)
+            time.sleep(0.1)
 
         print("all steps done")
         return True
