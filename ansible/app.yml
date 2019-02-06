@@ -47,5 +47,10 @@
   - name: restart back
     become: yes
     service:
-      name: acolock_back.service
-      state: restarted
+      name: "{{ item.name }}"
+      state: "{{ item.state }}"
+    loop:
+      - { name: "acolock_back.socket", state: "stopped" }
+      - { name: "acolock_back.service", state: "stopped" }
+      - { name: "acolock_back.socket", state: "started" }
+      - { name: "acolock_back.service", state: "started" }
