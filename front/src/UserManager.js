@@ -63,6 +63,23 @@ class User extends React.Component {
     this.setState({username: event.target.value})
   }
 
+  handleDelete = (event) => {
+    event.stopPropagation()
+    const { username, onDelete, newUser } = this.props
+    if (newUser)
+      return
+    if (window.confirm(`Supprimer l'accès de "${username}"\u00a0?`)) {
+      onDelete(username)
+        .then(() => {
+          this.setState({open: false, password: ""})
+        })
+        .catch((error) => {
+          alert(errorTranslator(error) || error)
+          this.setState({loading: false})
+        })
+    }
+  }
+
   handleSubmit = (event) => {
     event.stopPropagation()
     const { username } = this.props
@@ -131,7 +148,12 @@ class User extends React.Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            { !newUser && (
+              <Button onClick={this.handleDelete}>
+                Supprimer
+              </Button>
+            )}
+            <Button onClick={this.handleClose}>
               Annuler
             </Button>
             <Button disabled={loading} onClick={this.handleSubmit} color="primary">
@@ -144,12 +166,12 @@ class User extends React.Component {
   }
 }
 
-const UserList = ({users, onUserChange}) => {
+const UserList = ({users, onUserChange, onUserDelete}) => {
   return (
     <List component="nav">
       <User key="new-user" newUser onChange={onUserChange} />
       {Object.keys(users).map((key) => (
-        <User key={key} username={key} user={users[key]} onChange={onUserChange} />
+        <User key={key} username={key} user={users[key]} onChange={onUserChange} onDelete={onUserDelete} />
       ))}
     </List>
   )
@@ -224,6 +246,41 @@ export default class UserManager extends React.Component {
     })
   }
 
+  handleUserDelete = (username) => {
+    this.setState({ open: true, loading: true, error: undefined })
+    const {username: currentUserUsername, password: currentUserPassword} = this.props
+    return new Promise((resolve, reject) => {
+      fetch(backUrl("delete_user"), {
+        method: "POST",
+        body: JSON.stringify({
+          username: currentUserUsername,
+          password: currentUserPassword,
+          user: {
+            username,
+          },
+        }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      })
+        .then(response => response.json())
+        .then(response => {
+          if (response.success) {
+            this.setState({loading: false, users: response.users})
+            resolve()
+          } else {
+            this.setState({loading: false})
+            reject(response.error)
+          }
+        })
+        .catch(error => {
+          this.setState({loading: false})
+          reject(error)
+        })
+    })
+  }
+
   render() {
     const {
       loading,
@@ -254,7 +311,7 @@ export default class UserManager extends React.Component {
               </DialogContentText>
             )}
             { users && (
-              <UserList users={users} onUserChange={this.handleUserChange} />
+              <UserList users={users} onUserChange={this.handleUserChange} onUserDelete={this.handleUserDelete} />
             )}
           </DialogContent>
           <DialogActions>

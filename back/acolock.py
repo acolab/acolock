@@ -250,3 +250,28 @@ def update_user_action():
     save_codes(codes)
 
     return json.dumps({'success': True, 'users': codes})
+
+@app.route("/back/delete_user", methods=["POST", "OPTIONS"])
+def delete_user_action():
+    if request.method == "OPTIONS":
+        return ""
+
+    if not valid_credentials(request.json, admin_required = True):
+        return json.dumps({'success': False, 'error': "invalid_credentials"})
+
+    username = request.json["user"]["username"]
+
+    action_data = {
+        'username': username,
+    }
+    add_user_action(request.json["username"], "delete_user", action_data)
+
+    codes = load_codes()
+
+    if username not in codes:
+        return json.dumps({'success': False, 'error': "invalid_username"})
+
+    del codes[username]
+    save_codes(codes)
+
+    return json.dumps({'success': True, 'users': codes})
