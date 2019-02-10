@@ -19,13 +19,19 @@ class UserAction(peewee.Model):
     username = peewee.CharField(index=True)
     time = peewee.DateTimeField()
     action = peewee.CharField()
+    json_data = peewee.TextField()
 
     class Meta:
         database = db
         db_table = "user_actions"
 
-def add_user_action(username, action):
-    user_action = UserAction(username=username, time=datetime.datetime.now(), action=action)
+def add_user_action(username, action, data=None):
+    if data == None:
+        json_data = None
+    else:
+        json_data = json.dumps(data)
+
+    user_action = UserAction(username=username, time=datetime.datetime.now(), action=action, json_data=json_data)
     user_action.save()
 
 if app.config["ENV"] == "development":
@@ -204,15 +210,22 @@ def update_user_action():
     if not valid_credentials(request.json, admin_required = True):
         return json.dumps({'success': False, 'error': "invalid_credentials"})
 
-    codes = load_codes()
-
     updates = request.json["user"]
-
     username = updates.get("username", "")
     attributes = updates["attributes"]
     new_username = attributes.get("username", None)
     password = attributes.get("password", "")
     admin = attributes.get("admin", None)
+
+    action_data = {
+        'username': username,
+        'new_username': new_username,
+        'new_password': (password != ""),
+        'admin': True if admin else False,
+    }
+    add_user_action(request.json["username"], "update_user", action_data)
+
+    codes = load_codes()
 
     if username == "":
         if new_username == "":
