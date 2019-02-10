@@ -40,8 +40,6 @@
   - name: Ensure python3-dev is installed
     apt:
       name: python3-dev
-    tags:
-      - wip
 
   - name: Ensure build-essential is installed
     apt:

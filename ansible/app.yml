@@ -32,10 +32,6 @@
     tags:
       - back_setup
 
-  - name: create lock control directory
-    file:
-      path: /home/pi/lock_control
-      state: absent
 
   - name: Ensure socket is running
     become: yes
