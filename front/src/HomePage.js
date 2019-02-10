@@ -10,15 +10,10 @@ import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined'
-import MenuIcon from '@material-ui/icons/Menu'
-import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt'
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import withStyles from '@material-ui/core/styles/withStyles'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
 import backUrl from './backUrl'
 import credentialStore from './credentialStore'
 import Grid from '@material-ui/core/Grid'
@@ -84,44 +79,6 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 2,
   },
 })
-
-class HomeMenuButton extends React.Component {
-  state = {
-    anchorEl: null,
-  }
-
-  handleClick = event => {
-    this.setState({ anchorEl: event.currentTarget })
-  }
-
-  handleClose = () => {
-    this.setState({ anchorEl: null })
-  }
-
-  render() {
-    const { anchorEl } = this.state
-
-    return (
-      <div>
-        <Button
-          onClick={this.onMenuClick}
-        >
-          <MenuIcon/>
-        </Button>
-        <Menu
-          id="home-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={this.handleClose}
-        >
-          <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-          <MenuItem onClick={this.handleClose}>My account</MenuItem>
-          <MenuItem onClick={this.handleClose}>Logout</MenuItem>
-        </Menu>
-      </div>
-    )
-  }
-}
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -221,11 +178,9 @@ class HomePage extends React.Component {
     const { classes } = this.props
     const {
       toggling,
-      success,
       lockState,
       remember,
       lastActionResult,
-      credentialsManagerOpen,
     } = this.state
     const { username, password } = this.state
 

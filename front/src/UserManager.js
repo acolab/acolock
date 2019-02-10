@@ -25,7 +25,7 @@ class User extends React.Component {
   constructor(props) {
     super(props)
 
-    const { username, user, newUser } = props
+    const { user } = props
 
     this.state = {
       open: false,
@@ -83,7 +83,7 @@ class User extends React.Component {
   }
 
   render() {
-    const { username, user, newUser } = this.props
+    const { username, newUser } = this.props
     const { open, admin, password, username: newUsername, loading } = this.state
 
     return (
