@@ -21,6 +21,7 @@
       rsync_opts:
         - "--exclude=codes.yml"
         - "--exclude=lock_state.yml"
+        - "--exclude=acolock.sqlite"
     notify:
       - restart back
     tags:
@@ -32,6 +33,17 @@
     tags:
       - back_setup
 
+  - name: migrate
+    shell: |
+      cd /home/pi/back/
+      export LC_ALL=C.UTF-8
+      export LANG=C.UTF-8
+      . venv/bin/activate
+      export FLASK_APP=acolock
+      flask db upgrade
+    tags:
+      - back
+      - migrate
 
   - name: Ensure socket is running
     become: yes

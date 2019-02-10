@@ -6,6 +6,8 @@ ilock==1.0.2
 itsdangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.1.0
+peewee==3.8.2
+peewee-moves==2.0.0
 portalocker==1.3.0
 py-bcrypt==0.4
 PyYAML==4.2b4

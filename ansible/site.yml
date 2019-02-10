@@ -45,6 +45,10 @@
     apt:
       name: build-essential
 
+  - name: Ensure sqlite3 is installed
+    apt:
+      name: sqlite3
+
   - name: Ensure the latest nginx is installed
     apt:
       name: nginx

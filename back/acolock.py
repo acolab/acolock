@@ -6,8 +6,27 @@ from flask_cors import CORS
 from ilock import ILock, ILockException
 import json
 import bcrypt
+import peewee
+import datetime
+from playhouse.db_url import connect
 
 app = Flask(__name__)
+
+db = peewee.SqliteDatabase('acolock.sqlite')
+app.config['DATABASE'] = db
+
+class UserAction(peewee.Model):
+    username = peewee.CharField(index=True)
+    time = peewee.DateTimeField()
+    action = peewee.CharField()
+
+    class Meta:
+        database = db
+        db_table = "user_actions"
+
+def add_user_action(username, action):
+    user_action = UserAction(username=username, time=datetime.datetime.now(), action=action)
+    user_action.save()
 
 if app.config["ENV"] == "development":
     CORS(app, resources={r"/back/*": {"origins": "*"}})
@@ -131,6 +150,8 @@ def open_action():
     if not valid_credentials(request.json):
         return "invalid_credentials"
 
+    add_user_action(request.json["username"], "open")
+
     if open_lock():
         return "ok"
     else:
@@ -143,6 +164,8 @@ def close_action():
 
     if not valid_credentials(request.json):
         return "invalid_credentials"
+
+    add_user_action(request.json["username"], "close")
 
     if close_lock():
         return "ok"
