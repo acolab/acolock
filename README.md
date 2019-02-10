@@ -66,8 +66,8 @@ Pour tester le déploiement il faut lancer les commandes `ansible` avec `-i ansi
 
 Puis pour se connecter :
 * en ssh : `ssh -p 3022 pi@localhost`
-* en http : http://localhost:3080/
-* en https : http://localhost:3443/
+* en http : http://test.acolock.acolab.fr:3080/
+* en https : https://test.acolock.acolab.fr:3443/
 
 Dépendances pour le scan de QR Code
 -----------------------------------
