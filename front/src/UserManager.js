@@ -14,39 +14,13 @@ import AddIcon from '@material-ui/icons/Add'
 import PersonIcon from '@material-ui/icons/Person'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import errorTranslator from './errorTranslator'
+import ConfirmDialog from './ConfirmDialog'
 
 import backUrl from './backUrl'
 
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-
-class ConfirmDialog extends React.PureComponent {
-  render() {
-    const { open, message, onConfirm, onCancel } = this.props
-    return (
-      <Dialog
-        open={open}
-        onClose={onCancel}
-        aria-describedby="confirm-dialog-message"
-      >
-        <DialogContent>
-          <DialogContentText id="confirm-dialog-message">
-            {message}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onCancel} color="primary">
-            Annuler
-          </Button>
-          <Button onClick={onConfirm} color="primary" autoFocus>
-            Confirmer
-          </Button>
-        </DialogActions>
-      </Dialog>
-    )
-  }
-}
 
 class User extends React.Component {
   constructor(props) {

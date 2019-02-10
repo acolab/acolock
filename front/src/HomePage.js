@@ -19,6 +19,7 @@ import credentialStore from './credentialStore'
 import Grid from '@material-ui/core/Grid'
 import LockControlActionResult from './LockControlActionResult'
 import UserManager from './UserManager'
+import ConfirmDialog from './ConfirmDialog'
 
 const styles = theme => ({
   main: {
@@ -127,17 +128,31 @@ class HomePage extends React.Component {
   onOpenClick = (event) => {
     event.preventDefault()
     const { lockState } = this.state
-    if (lockState === "open" && !window.confirm("La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?"))
+    if (lockState === "open") {
+      this.setState({confirmAction: true, confirmedCommand: "open"})
       return
+    }
     this.sendCommand("open")
   }
 
   onCloseClick = (event) => {
     event.preventDefault()
     const { lockState } = this.state
-    if (lockState === "closed" && !window.confirm("La serrure semble être déjà fermée. Êtes vous sûr\u00a0?"))
+    if (lockState === "closed") {
+      this.setState({confirmAction: true, confirmedCommand: "close"})
       return
+    }
     this.sendCommand("close")
+  }
+
+  handleActionConfirm = () => {
+    this.setState({confirmAction: false})
+    const { confirmedCommand } = this.state
+    this.sendCommand(confirmedCommand)
+  }
+
+  handleActionCancel = () => {
+    this.setState({confirmAction: false})
   }
 
   onUsernameChange = (event) => {
@@ -245,6 +260,17 @@ class HomePage extends React.Component {
               </div>
             }
             <LockControlActionResult result={lastActionResult} />
+            <ConfirmDialog
+              open={this.state.confirmAction}
+              message={
+                {
+                  "open": "La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?",
+                  "close": "La serrure semble être déjà fermée. Êtes vous sûr\u00a0?",
+                }[this.state.confirmedCommand]
+              }
+              onCancel={this.handleActionCancel}
+              onConfirm={this.handleActionConfirm}
+            />
           </form>
         </Paper>
       </main>
