@@ -21,6 +21,33 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 
+class ConfirmDialog extends React.PureComponent {
+  render() {
+    const { open, message, onConfirm, onCancel } = this.props
+    return (
+      <Dialog
+        open={open}
+        onClose={onCancel}
+        aria-describedby="confirm-dialog-message"
+      >
+        <DialogContent>
+          <DialogContentText id="confirm-dialog-message">
+            {message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onCancel} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={onConfirm} color="primary" autoFocus>
+            Confirmer
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+}
+
 class User extends React.Component {
   constructor(props) {
     super(props)
@@ -63,21 +90,28 @@ class User extends React.Component {
     this.setState({username: event.target.value})
   }
 
-  handleDelete = (event) => {
-    event.stopPropagation()
-    const { username, onDelete, newUser } = this.props
+  handleDelete = () => {
+    const { newUser } = this.props
     if (newUser)
       return
-    if (window.confirm(`Supprimer l'accès de "${username}"\u00a0?`)) {
-      onDelete(username)
-        .then(() => {
-          this.setState({open: false, password: ""})
-        })
-        .catch((error) => {
-          alert(errorTranslator(error) || error)
-          this.setState({loading: false})
-        })
-    }
+    this.setState({confirmDelete: true})
+  }
+
+  handleDeleteCancel = () => {
+    this.setState({confirmDelete: false})
+  }
+
+  handleDeleteConfirm = () => {
+    const { username, onDelete } = this.props
+    this.setState({confirmDelete: false})
+    onDelete(username)
+      .then(() => {
+        this.setState({open: false, password: ""})
+      })
+      .catch((error) => {
+        alert(errorTranslator(error) || error)
+        this.setState({loading: false})
+      })
   }
 
   handleSubmit = (event) => {
@@ -101,7 +135,14 @@ class User extends React.Component {
 
   render() {
     const { username, newUser } = this.props
-    const { open, admin, password, username: newUsername, loading } = this.state
+    const {
+      open,
+      admin,
+      password,
+      username: newUsername,
+      loading,
+      confirmDelete,
+    } = this.state
 
     return (
       <ListItem button onClick={this.handleItemClick}>
@@ -161,6 +202,12 @@ class User extends React.Component {
             </Button>
           </DialogActions>
         </Dialog>
+        <ConfirmDialog
+          open={confirmDelete}
+          message={`Supprimer l'accès de "${username}"\u00a0?`}
+          onCancel={this.handleDeleteCancel}
+          onConfirm={this.handleDeleteConfirm}
+        />
       </ListItem>
     )
   }
