@@ -8,9 +8,15 @@ import json
 import bcrypt
 import peewee
 import datetime
+import logging
 from playhouse.db_url import connect
 
 app = Flask(__name__)
+
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 
 db = peewee.SqliteDatabase('acolock.sqlite')
 app.config['DATABASE'] = db

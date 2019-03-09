@@ -13,6 +13,8 @@ ExecStart=/home/pi/back/venv/bin/gunicorn \
           --pid /run/acolock/pid \
           --bind unix:/run/acolock/socket \
           --workers 4 \
+          --log-file=/home/pi/back/gunicorn.log \
+          --log-level=debug \
           acolock:app
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
