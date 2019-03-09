@@ -24,6 +24,7 @@ def lock_control(command):
 
     step_turn_timeout = 1
     open_steps = close_steps = 40
+    warmup_delay = 2
 
     def setup_pins():
         for relay in all_relays:
@@ -46,7 +47,8 @@ def lock_control(command):
 
     def wait_for_steps(count):
         last_status = step_status()
-        last_status_change_time = time.time()
+        start_time = time.time()
+        last_status_change_time = start_time
 
         while count > 0:
             print("steps remaining: " + str(count))
@@ -58,8 +60,11 @@ def lock_control(command):
                 last_status = status
                 last_status_change_time = now
             elif now - last_status_change_time >= step_turn_timeout:
-                print("wait_for_steps timeout")
-                return False
+                if now - start_time < warmup_delay:
+                    print("timeout during warmup")
+                else:
+                    print("wait_for_steps timeout")
+                    return False
 
             time.sleep(0.1)
 
