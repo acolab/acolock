@@ -19,7 +19,7 @@ const styles = theme => ({
   },
 })
 
-class InvalidCredentialsNotification extends React.Component {
+class ActionResult extends React.Component {
   state = {
     open: false,
   }
@@ -37,7 +37,7 @@ class InvalidCredentialsNotification extends React.Component {
     if (result !== prevProps.result) {
       if (result === undefined) this.setState({open: false})
       else {
-        const success = result === "ok"
+        const success = result === "ok" || result === "logged_in"
         this.setState({open: true, success})
       }
     }
@@ -92,4 +92,4 @@ class InvalidCredentialsNotification extends React.Component {
   }
 }
 
-export default withStyles(styles)(InvalidCredentialsNotification)
+export default withStyles(styles)(ActionResult)

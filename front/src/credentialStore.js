@@ -1,6 +1,11 @@
 const credentialStore = {
-  save: ({username, password}) => {
-    localStorage.setItem("credentials", JSON.stringify({username, password}))
+  saveToken: token => {
+    localStorage.setItem("token", token)
+  },
+
+  loadToken: () => {
+    const token = localStorage.getItem("token")
+    if (token !== null) return token
   },
 
   load: () => {

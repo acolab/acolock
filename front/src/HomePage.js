@@ -17,7 +17,7 @@ import CircularProgress from "@material-ui/core/CircularProgress"
 import backUrl from "./backUrl"
 import credentialStore from "./credentialStore"
 import Grid from "@material-ui/core/Grid"
-import LockControlActionResult from "./LockControlActionResult"
+import ActionResult from "./ActionResult"
 import UserManager from "./UserManager"
 import ConfirmDialog from "./ConfirmDialog"
 
@@ -86,26 +86,24 @@ class HomePage extends React.Component {
     super(props)
 
     const {username, password} = credentialStore.load()
+    const token = credentialStore.loadToken()
 
     this.state = {
       toggling: false,
-      remember: username !== undefined,
       username,
       password,
+      token,
+      loggedIn: token !== undefined,
     }
   }
 
   sendCommand = command => {
     this.setState({toggling: true, success: undefined, lastActionResult: undefined})
-    const {username, password} = this.state
-    const {remember} = this.state
-
-    if (remember) credentialStore.save({username, password})
-    else credentialStore.clear()
+    const {token} = this.state
 
     fetch(backUrl(command), {
       method: "POST",
-      body: JSON.stringify({username, password}),
+      body: JSON.stringify({token}),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -114,6 +112,7 @@ class HomePage extends React.Component {
       .then(response => response.text())
       .then(response => {
         this.setState({toggling: false, success: response === "ok", lastActionResult: response})
+        if (response === "invalid_credentials") this.setState({loggedIn: false, token: undefined})
       })
       .catch(error => {
         this.setState({toggling: false, success: false, lastActionResult: "server_error"})
@@ -123,7 +122,37 @@ class HomePage extends React.Component {
       })
   }
 
-  onOpenClick = event => {
+  handleLoginSubmit = e => {
+    e.preventDefault()
+
+    const {username, password} = this.state
+    this.setState({loggingIn: true, loggedIn: false, lastActionResult: undefined})
+    fetch(backUrl("login"), {
+      method: "POST",
+      body: JSON.stringify({username, password}),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then(response => response.json())
+      .then(response => {
+        if (response.success) {
+          const {token} = response
+          credentialStore.saveToken(token)
+          credentialStore.clear()
+          this.setState({loggingIn: false, loggedIn: true, lastActionResult: "logged_in", token})
+        } else {
+          const {error} = response
+          this.setState({loggingIn: false, loggedIn: false, lastActionResult: error})
+        }
+      })
+      .catch(error => {
+        this.setState({loggingIn: false, loggedIn: false, lastActionResult: "server_error"})
+      })
+  }
+
+  handleOpenClick = event => {
     event.preventDefault()
     const {lockState} = this.state
     if (lockState === "open") {
@@ -133,7 +162,7 @@ class HomePage extends React.Component {
     this.sendCommand("open")
   }
 
-  onCloseClick = event => {
+  handleCloseClick = event => {
     event.preventDefault()
     const {lockState} = this.state
     if (lockState === "closed") {
@@ -153,15 +182,15 @@ class HomePage extends React.Component {
     this.setState({confirmAction: false})
   }
 
-  onUsernameChange = event => {
+  handleUsernameChange = event => {
     this.setState({username: event.target.value})
   }
 
-  onPasswordChange = event => {
+  handlePasswordChange = event => {
     this.setState({password: event.target.value})
   }
 
-  onRememberChange = (event, checked) => {
+  handleRememberChange = (event, checked) => {
     this.setState({remember: checked})
   }
 
@@ -182,14 +211,23 @@ class HomePage extends React.Component {
       })
   }
 
-  onMenuClick = () => {
+  handleMenuClick = () => {
     this.setState({menuOpen: true})
   }
 
   render() {
     const {classes} = this.props
-    const {toggling, lockState, remember, lastActionResult} = this.state
-    const {username, password} = this.state
+    const {
+      loggingIn,
+      toggling,
+      lockState,
+      remember,
+      lastActionResult,
+      loggedIn,
+      token,
+      username,
+      password,
+    } = this.state
 
     return (
       <main className={classes.main}>
@@ -202,41 +240,44 @@ class HomePage extends React.Component {
           <Typography component="h1" variant="h5">
             ACoLock
           </Typography>
-          <form className={classes.form}>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="username">Idenfiant</InputLabel>
-              <Input
-                id="username"
-                name="username"
-                autoComplete="username"
-                autoFocus
-                onChange={this.onUsernameChange}
-                value={username}
-              />
-            </FormControl>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="password">Mot de passe</InputLabel>
-              <Input
-                name="password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={this.onPasswordChange}
-                value={password}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value="remember"
-                  color="primary"
-                  onChange={this.onRememberChange}
-                  checked={remember}
+          {loggedIn || (
+            <form className={classes.form} onSubmit={this.handleLoginSubmit}>
+              <FormControl margin="normal" required fullWidth>
+                <InputLabel htmlFor="username">Idenfiant</InputLabel>
+                <Input
+                  id="username"
+                  name="username"
+                  autoComplete="username"
+                  autoFocus
+                  onChange={this.handleUsernameChange}
+                  value={username}
                 />
-              }
-              label="Enregistrer"
-            />
-            {toggling ? (
+              </FormControl>
+              <FormControl margin="normal" required fullWidth>
+                <InputLabel htmlFor="password">Mot de passe</InputLabel>
+                <Input
+                  name="password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={this.handlePasswordChange}
+                  value={password}
+                />
+              </FormControl>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                disabled={loggingIn}
+                type="submit"
+              >
+                Connexion
+              </Button>
+            </form>
+          )}
+          {loggedIn &&
+            (toggling ? (
               <div className={classes.progressContainer}>
                 <CircularProgress className={classes.progress} />
               </div>
@@ -250,7 +291,7 @@ class HomePage extends React.Component {
                       color="primary"
                       className={classes.submit}
                       disabled={toggling}
-                      onClick={this.onOpenClick}
+                      onClick={this.handleOpenClick}
                     >
                       Ouvrir
                     </Button>
@@ -262,30 +303,29 @@ class HomePage extends React.Component {
                       color="secondary"
                       className={classes.submit}
                       disabled={toggling}
-                      onClick={this.onCloseClick}
+                      onClick={this.handleCloseClick}
                     >
                       Fermer
                     </Button>
                   </Grid>
                 </Grid>
                 <div className={classes.manageCodes}>
-                  <UserManager {...{username, password}} />
+                  <UserManager {...{token}} />
                 </div>
               </div>
-            )}
-            <LockControlActionResult result={lastActionResult} />
-            <ConfirmDialog
-              open={this.state.confirmAction}
-              message={
-                {
-                  open: "La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?",
-                  close: "La serrure semble être déjà fermée. Êtes vous sûr\u00a0?",
-                }[this.state.confirmedCommand]
-              }
-              onCancel={this.handleActionCancel}
-              onConfirm={this.handleActionConfirm}
-            />
-          </form>
+            ))}
+          <ActionResult result={lastActionResult} />
+          <ConfirmDialog
+            open={this.state.confirmAction}
+            message={
+              {
+                open: "La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?",
+                close: "La serrure semble être déjà fermée. Êtes vous sûr\u00a0?",
+              }[this.state.confirmedCommand]
+            }
+            onCancel={this.handleActionCancel}
+            onConfirm={this.handleActionConfirm}
+          />
         </Paper>
       </main>
     )

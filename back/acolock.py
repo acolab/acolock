@@ -1,7 +1,7 @@
 import time
 import yaml
 import subprocess
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 from ilock import ILock, ILockException
 import json
@@ -10,6 +10,7 @@ import peewee
 import datetime
 import logging
 from playhouse.db_url import connect
+import secrets
 
 app = Flask(__name__)
 
@@ -31,7 +32,16 @@ class UserAction(peewee.Model):
         database = db
         db_table = "user_actions"
 
-def add_user_action(username, action, data=None):
+class UserToken(peewee.Model):
+    username = peewee.CharField()
+    token = peewee.CharField(index=True)
+
+    class Meta:
+        database = db
+        db_table = "user_tokens"
+
+def add_user_action(action, data=None):
+    username = g.current_username
     if data == None:
         json_data = None
     else:
@@ -39,6 +49,10 @@ def add_user_action(username, action, data=None):
 
     user_action = UserAction(username=username, time=datetime.datetime.now(), action=action, json_data=json_data)
     user_action.save()
+
+def save_token(username, token):
+    user_token = UserToken(username=username, token=token)
+    user_token.save()
 
 if app.config["ENV"] == "development":
     CORS(app, resources={r"/back/*": {"origins": "*"}})
@@ -85,23 +99,44 @@ def hash_passwords(codes):
 
 def hash_password(password):
     return bcrypt.hashpw(password, bcrypt.gensalt(12))
+
 def valid_credentials(credentials, admin_required = False):
     codes = load_codes()
 
-    username = credentials["username"]
+    if "token" in credentials:
+        try:
+            user_token = UserToken.get(UserToken.token == credentials["token"])
+        except peewee.DoesNotExist:
+            return False
+        username = user_token.username
+        password_check_required = False
+    elif "username" in credentials and "password" in credentials:
+        username = credentials["username"]
+        password_check_required = True
+    else:
+        return False
+
     if username not in codes:
         return False
 
     code = codes[username]
 
-    if code["password"] == "":
+    if password_check_required and code["password"] == "":
         return False
 
     if admin_required and code.get("admin", False) != True:
         return False
 
-    password = credentials["password"]
-    return bcrypt.checkpw(password, code["password"])
+    if password_check_required:
+        password = credentials["password"]
+        result = bcrypt.checkpw(password, code["password"])
+    else:
+        result = True
+
+    if result:
+        g.current_username = username
+
+    return result
 
 def get_lock_state():
     try:
@@ -162,7 +197,7 @@ def open_action():
     if not valid_credentials(request.json):
         return "invalid_credentials"
 
-    add_user_action(request.json["username"], "open")
+    add_user_action("open")
 
     if open_lock():
         return "ok"
@@ -177,7 +212,7 @@ def close_action():
     if not valid_credentials(request.json):
         return "invalid_credentials"
 
-    add_user_action(request.json["username"], "close")
+    add_user_action("close")
 
     if close_lock():
         return "ok"
@@ -229,7 +264,7 @@ def update_user_action():
         'new_password': (password != ""),
         'admin': True if admin else False,
     }
-    add_user_action(request.json["username"], "update_user", action_data)
+    add_user_action("update_user", action_data)
 
     codes = load_codes()
 
@@ -270,7 +305,7 @@ def delete_user_action():
     action_data = {
         'username': username,
     }
-    add_user_action(request.json["username"], "delete_user", action_data)
+    add_user_action("delete_user", action_data)
 
     codes = load_codes()
 
@@ -281,3 +316,15 @@ def delete_user_action():
     save_codes(codes)
 
     return json.dumps({'success': True, 'users': codes})
+
+@app.route("/back/login", methods=["POST", "OPTIONS"])
+def login_action():
+    if request.method == "OPTIONS":
+        return ""
+
+    if not valid_credentials(request.json):
+        return json.dumps({'success': False, 'error': "invalid_credentials"})
+
+    token = secrets.token_hex()
+    save_token(g.current_username, token)
+    return json.dumps({'success': True, 'token': token})

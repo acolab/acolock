@@ -194,11 +194,11 @@ export default class UserManager extends React.Component {
 
   handleClickOpen = () => {
     this.setState({open: true, loading: true, error: undefined, users: undefined})
-    const {username, password} = this.props
+    const {token} = this.props
 
     fetch(backUrl("users"), {
       method: "POST",
-      body: JSON.stringify({username, password}),
+      body: JSON.stringify({token}),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -220,13 +220,12 @@ export default class UserManager extends React.Component {
 
   handleUserChange = (username, attributes) => {
     this.setState({open: true, loading: true, error: undefined})
-    const {username: currentUserUsername, password: currentUserPassword} = this.props
+    const {token} = this.props
     return new Promise((resolve, reject) => {
       fetch(backUrl("update_user"), {
         method: "POST",
         body: JSON.stringify({
-          username: currentUserUsername,
-          password: currentUserPassword,
+          token,
           user: {
             username,
             attributes,
@@ -256,13 +255,12 @@ export default class UserManager extends React.Component {
 
   handleUserDelete = username => {
     this.setState({open: true, loading: true, error: undefined})
-    const {username: currentUserUsername, password: currentUserPassword} = this.props
+    const {token} = this.props
     return new Promise((resolve, reject) => {
       fetch(backUrl("delete_user"), {
         method: "POST",
         body: JSON.stringify({
-          username: currentUserUsername,
-          password: currentUserPassword,
+          token,
           user: {
             username,
           },

@@ -12,6 +12,8 @@ export default function errorTranslator(error) {
       return "Mot de passe non renseigné"
     case "username_already_exists":
       return "Nom d'utilisateur déjà pris"
+    case "logged_in":
+      return "Connexion réussie"
     default:
       return undefined
   }
