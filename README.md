@@ -1,3 +1,24 @@
+Développement
+=============
+
+Pour modifier Acolock :
+
+La première fois :
+
+```
+git clone git@github.com:acolab/acolock.git
+cd acolock
+./setup
+```
+
+Puis pour lancer les serveurs de développement (nécessite [foreman](https://github.com/ddollar/foreman) ou [équivalent](https://github.com/ddollar/foreman#ports)):
+
+```
+foreman start
+```
+
+Puis aller sur http://localhost:5000/.
+
 Installation
 ============
 
