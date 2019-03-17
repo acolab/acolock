@@ -4,8 +4,6 @@ import Avatar from "@material-ui/core/Avatar"
 import Button from "@material-ui/core/Button"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import FormControl from "@material-ui/core/FormControl"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
-import Checkbox from "@material-ui/core/Checkbox"
 import Input from "@material-ui/core/Input"
 import InputLabel from "@material-ui/core/InputLabel"
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined"
@@ -35,10 +33,12 @@ const styles = theme => ({
   },
   paper: {
     marginTop: theme.spacing.unit * 8,
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+  },
+  paperContent: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
   },
   avatarOpen: {
     margin: theme.spacing.unit,
@@ -214,10 +214,6 @@ class HomePage extends React.Component {
     this.setState({password: event.target.value})
   }
 
-  handleRememberChange = (event, checked) => {
-    this.setState({remember: checked})
-  }
-
   componentDidMount() {
     this.timer = setInterval(this.updateLockState, 10000)
     this.updateLockState()
@@ -245,7 +241,6 @@ class HomePage extends React.Component {
       loggingIn,
       toggling,
       lockState,
-      remember,
       lastActionResult,
       loggedIn,
       token,
@@ -258,104 +253,106 @@ class HomePage extends React.Component {
       <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
-          <Avatar className={lockState === "open" ? classes.avatarOpen : classes.avatarClosed}>
-            {lockState === "open" && <LockOpenOutlinedIcon />}
-            {lockState === "closed" && <LockOutlinedIcon />}
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            ACoLock
-          </Typography>
-          {loggedIn || (
-            <form className={classes.form} onSubmit={this.handleLoginSubmit}>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Idenfiant</InputLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  autoFocus
-                  onChange={this.handleUsernameChange}
-                  value={username}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Mot de passe</InputLabel>
-                <Input
-                  name="password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={this.handlePasswordChange}
-                  value={password}
-                />
-              </FormControl>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={loggingIn}
-                type="submit"
-              >
-                Connexion
-              </Button>
-            </form>
-          )}
-          {loggedIn &&
-            (toggling ? (
-              <div className={classes.progressContainer}>
-                <CircularProgress className={classes.progress} />
-              </div>
-            ) : (
-              <div>
-                <Grid container spacing={24}>
-                  <Grid item xs={6}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      className={classes.submit}
-                      disabled={toggling}
-                      onClick={this.handleOpenClick}
-                    >
-                      Ouvrir
-                    </Button>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="secondary"
-                      className={classes.submit}
-                      disabled={toggling}
-                      onClick={this.handleCloseClick}
-                    >
-                      Fermer
-                    </Button>
-                  </Grid>
-                </Grid>
-                {admin && (
-                  <div className={classes.manageCodes}>
-                    <UserManager {...{token}} />
-                  </div>
-                )}
-                <Button fullWidth className={classes.logout} onClick={this.handleLogoutClick}>
-                  Déconnexion
+          <div className={classes.paperContent}>
+            <Avatar className={lockState === "open" ? classes.avatarOpen : classes.avatarClosed}>
+              {lockState === "open" && <LockOpenOutlinedIcon />}
+              {lockState === "closed" && <LockOutlinedIcon />}
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              ACoLock
+            </Typography>
+            {loggedIn || (
+              <form className={classes.form} onSubmit={this.handleLoginSubmit}>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="username">Idenfiant</InputLabel>
+                  <Input
+                    id="username"
+                    name="username"
+                    autoComplete="username"
+                    autoFocus
+                    onChange={this.handleUsernameChange}
+                    value={username}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="password">Mot de passe</InputLabel>
+                  <Input
+                    name="password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    onChange={this.handlePasswordChange}
+                    value={password}
+                  />
+                </FormControl>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  disabled={loggingIn}
+                  type="submit"
+                >
+                  Connexion
                 </Button>
-              </div>
-            ))}
-          <ActionResult result={lastActionResult} />
-          <ConfirmDialog
-            open={this.state.confirmAction}
-            message={
-              {
-                open: "La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?",
-                close: "La serrure semble être déjà fermée. Êtes vous sûr\u00a0?",
-              }[this.state.confirmedCommand]
-            }
-            onCancel={this.handleActionCancel}
-            onConfirm={this.handleActionConfirm}
-          />
+              </form>
+            )}
+            {loggedIn &&
+              (toggling ? (
+                <div className={classes.progressContainer}>
+                  <CircularProgress className={classes.progress} />
+                </div>
+              ) : (
+                <div>
+                  <Grid container spacing={24}>
+                    <Grid item xs={6}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        disabled={toggling}
+                        onClick={this.handleOpenClick}
+                      >
+                        Ouvrir
+                      </Button>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        className={classes.submit}
+                        disabled={toggling}
+                        onClick={this.handleCloseClick}
+                      >
+                        Fermer
+                      </Button>
+                    </Grid>
+                  </Grid>
+                  {admin && (
+                    <div className={classes.manageCodes}>
+                      <UserManager {...{token}} />
+                    </div>
+                  )}
+                  <Button fullWidth className={classes.logout} onClick={this.handleLogoutClick}>
+                    Déconnexion
+                  </Button>
+                </div>
+              ))}
+            <ActionResult result={lastActionResult} />
+            <ConfirmDialog
+              open={this.state.confirmAction || false}
+              message={
+                {
+                  open: "La serrure semble être déjà ouverte. Êtes vous sûr\u00a0?",
+                  close: "La serrure semble être déjà fermée. Êtes vous sûr\u00a0?",
+                }[this.state.confirmedCommand]
+              }
+              onCancel={this.handleActionCancel}
+              onConfirm={this.handleActionConfirm}
+            />
+          </div>
         </Paper>
       </main>
     )

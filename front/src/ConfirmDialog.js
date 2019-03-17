@@ -9,15 +9,13 @@ class ConfirmDialog extends React.PureComponent {
   render() {
     const {open, message, onConfirm, onCancel} = this.props
     return (
-      <Dialog open={open} onClose={onCancel} aria-describedby="confirm-dialog-message">
+      <Dialog open={open || false} onClose={onCancel} aria-describedby="confirm-dialog-message">
         <DialogContent>
           <DialogContentText id="confirm-dialog-message">{message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onCancel} color="primary">
-            Annuler
-          </Button>
-          <Button onClick={onConfirm} color="primary" autoFocus>
+          <Button onClick={onCancel}>Annuler</Button>
+          <Button onClick={onConfirm} color="secondary" autoFocus>
             Confirmer
           </Button>
         </DialogActions>

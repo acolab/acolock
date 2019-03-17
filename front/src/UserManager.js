@@ -30,7 +30,6 @@ class ErrorMessage extends React.PureComponent {
     const {message, classes} = this.props
     if (message === undefined) return null
 
-    console.log({message})
     return (
       <SnackbarContent className={classes.error} message={errorTranslator(message) || message} />
     )
@@ -99,13 +98,9 @@ class User extends React.Component {
   handleDeleteConfirm = () => {
     const {username, onDelete} = this.props
     this.setState({confirmDelete: false, open: false, error: undefined})
-    onDelete(username)
-      .then(() => {
-        this.setState({password: "", error: undefined})
-      })
-      .catch(error => {
-        this.setState({loading: false, open: true, error: "server_error"})
-      })
+    onDelete(username).catch(error => {
+      this.setState({loading: false, open: true, error: "server_error"})
+    })
   }
 
   handleSubmit = event => {
@@ -138,7 +133,7 @@ class User extends React.Component {
         </ListItemIcon>
         <ListItemText primary={newUser ? "Nouvel utilisateur" : username} />
         <Dialog
-          open={open}
+          open={open || false}
           onClose={this.handleClose}
           onClick={this.handleDialogClick}
           aria-labelledby="form-dialog-title"
