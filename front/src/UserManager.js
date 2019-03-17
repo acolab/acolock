@@ -10,8 +10,9 @@ import CircularProgress from "@material-ui/core/CircularProgress"
 import Grid from "@material-ui/core/Grid"
 import Checkbox from "@material-ui/core/Checkbox"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
-import AddIcon from "@material-ui/icons/Add"
+import PersonAddIcon from "@material-ui/icons/PersonAdd"
 import PersonIcon from "@material-ui/icons/Person"
+import BuildIcon from "@material-ui/icons/Build"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import errorTranslator from "./errorTranslator"
 import ConfirmDialog from "./ConfirmDialog"
@@ -132,7 +133,9 @@ class User extends React.Component {
 
     return (
       <ListItem button onClick={this.handleItemClick}>
-        <ListItemIcon>{newUser ? <AddIcon /> : <PersonIcon />}</ListItemIcon>
+        <ListItemIcon>
+          {newUser ? <PersonAddIcon /> : admin ? <BuildIcon /> : <PersonIcon />}
+        </ListItemIcon>
         <ListItemText primary={newUser ? "Nouvel utilisateur" : username} />
         <Dialog
           open={open}
