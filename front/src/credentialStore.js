@@ -5,14 +5,13 @@ const credentialStore = {
 
   load: () => {
     const rawCredentials = localStorage.getItem("credentials")
-    if (rawCredentials === null)
-      return {}
+    if (rawCredentials === null) return {}
     return JSON.parse(rawCredentials)
   },
 
   clear: () => {
     localStorage.removeItem("credentials")
-  }
+  },
 }
 
 export default credentialStore

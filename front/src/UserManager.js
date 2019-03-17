@@ -1,32 +1,32 @@
-import React from 'react'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Grid from '@material-ui/core/Grid'
-import Checkbox from '@material-ui/core/Checkbox'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import AddIcon from '@material-ui/icons/Add'
-import PersonIcon from '@material-ui/icons/Person'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import errorTranslator from './errorTranslator'
-import ConfirmDialog from './ConfirmDialog'
+import React from "react"
+import Button from "@material-ui/core/Button"
+import TextField from "@material-ui/core/TextField"
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Grid from "@material-ui/core/Grid"
+import Checkbox from "@material-ui/core/Checkbox"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import AddIcon from "@material-ui/icons/Add"
+import PersonIcon from "@material-ui/icons/Person"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import errorTranslator from "./errorTranslator"
+import ConfirmDialog from "./ConfirmDialog"
 
-import backUrl from './backUrl'
+import backUrl from "./backUrl"
 
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemText from "@material-ui/core/ListItemText"
 
 class User extends React.Component {
   constructor(props) {
     super(props)
 
-    const { user } = props
+    const {user} = props
 
     this.state = {
       open: false,
@@ -37,7 +37,7 @@ class User extends React.Component {
   }
 
   handleItemClick = () => {
-    const { user } = this.props
+    const {user} = this.props
     this.setState({
       open: true,
       admin: user && user.admin,
@@ -47,7 +47,7 @@ class User extends React.Component {
     })
   }
 
-  handleClose = (event) => {
+  handleClose = event => {
     event.stopPropagation()
     this.setState({open: false, password: ""})
   }
@@ -56,18 +56,17 @@ class User extends React.Component {
     this.setState({admin: checked})
   }
 
-  handlePasswordChange = (event) => {
+  handlePasswordChange = event => {
     this.setState({password: event.target.value})
   }
 
-  handleUsernameChange = (event) => {
+  handleUsernameChange = event => {
     this.setState({username: event.target.value})
   }
 
   handleDelete = () => {
-    const { newUser } = this.props
-    if (newUser)
-      return
+    const {newUser} = this.props
+    if (newUser) return
     this.setState({confirmDelete: true})
   }
 
@@ -76,63 +75,57 @@ class User extends React.Component {
   }
 
   handleDeleteConfirm = () => {
-    const { username, onDelete } = this.props
+    const {username, onDelete} = this.props
     this.setState({confirmDelete: false})
     onDelete(username)
       .then(() => {
         this.setState({open: false, password: ""})
       })
-      .catch((error) => {
+      .catch(error => {
         alert(errorTranslator(error) || error)
         this.setState({loading: false})
       })
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = event => {
     event.stopPropagation()
-    const { username } = this.props
-    const { admin, password, username: newUsername } = this.state
+    const {username} = this.props
+    const {admin, password, username: newUsername} = this.state
     this.setState({loading: true})
-    this.props.onChange(username, {admin, password, username: newUsername})
+    this.props
+      .onChange(username, {admin, password, username: newUsername})
       .then(() => {
         this.setState({open: false, password: ""})
       })
-      .catch((error) => {
+      .catch(error => {
         alert(errorTranslator(error) || error)
         this.setState({loading: false})
       })
   }
 
-  handleDialogClick = (event) => {
+  handleDialogClick = event => {
     event.stopPropagation()
   }
 
   render() {
-    const { username, newUser } = this.props
-    const {
-      open,
-      admin,
-      password,
-      username: newUsername,
-      loading,
-      confirmDelete,
-    } = this.state
+    const {username, newUser} = this.props
+    const {open, admin, password, username: newUsername, loading, confirmDelete} = this.state
 
     return (
       <ListItem button onClick={this.handleItemClick}>
-        <ListItemIcon>
-         { newUser ? <AddIcon /> : <PersonIcon /> }
-        </ListItemIcon>
-        <ListItemText primary={newUser ? "Nouvel utilisateur" : username}/>
+        <ListItemIcon>{newUser ? <AddIcon /> : <PersonIcon />}</ListItemIcon>
+        <ListItemText primary={newUser ? "Nouvel utilisateur" : username} />
         <Dialog
           open={open}
           onClose={this.handleClose}
           onClick={this.handleDialogClick}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">{newUser ? "Nouvel utilisateur" : username}</DialogTitle>
+          <DialogTitle id="form-dialog-title">
+            {newUser ? "Nouvel utilisateur" : username}
+          </DialogTitle>
           <DialogContent>
-            { newUser && (
+            {newUser && (
               <TextField
                 margin="dense"
                 label="Nom d'utilisateur"
@@ -155,22 +148,12 @@ class User extends React.Component {
             />
             <FormControlLabel
               label="Admin"
-              control={
-              <Checkbox
-                checked={admin}
-                onChange={this.handleAdminChange}
-              />}
+              control={<Checkbox checked={admin} onChange={this.handleAdminChange} />}
             />
           </DialogContent>
           <DialogActions>
-            { !newUser && (
-              <Button onClick={this.handleDelete}>
-                Supprimer
-              </Button>
-            )}
-            <Button onClick={this.handleClose}>
-              Annuler
-            </Button>
+            {!newUser && <Button onClick={this.handleDelete}>Supprimer</Button>}
+            <Button onClick={this.handleClose}>Annuler</Button>
             <Button disabled={loading} onClick={this.handleSubmit} color="primary">
               Enregistrer
             </Button>
@@ -191,8 +174,14 @@ const UserList = ({users, onUserChange, onUserDelete}) => {
   return (
     <List component="nav">
       <User key="new-user" newUser onChange={onUserChange} />
-      {Object.keys(users).map((key) => (
-        <User key={key} username={key} user={users[key]} onChange={onUserChange} onDelete={onUserDelete} />
+      {Object.keys(users).map(key => (
+        <User
+          key={key}
+          username={key}
+          user={users[key]}
+          onChange={onUserChange}
+          onDelete={onUserDelete}
+        />
       ))}
     </List>
   )
@@ -204,23 +193,21 @@ export default class UserManager extends React.Component {
   }
 
   handleClickOpen = () => {
-    this.setState({ open: true, loading: true, error: undefined, users: undefined })
+    this.setState({open: true, loading: true, error: undefined, users: undefined})
     const {username, password} = this.props
 
     fetch(backUrl("users"), {
       method: "POST",
       body: JSON.stringify({username, password}),
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
     })
       .then(response => response.json())
       .then(response => {
-        if (response.success)
-          this.setState({loading: false, users: response.users})
-        else
-          this.setState({loading: false, error: response.error})
+        if (response.success) this.setState({loading: false, users: response.users})
+        else this.setState({loading: false, error: response.error})
       })
       .catch(error => {
         this.setState({loading: false, error: error.message})
@@ -228,11 +215,11 @@ export default class UserManager extends React.Component {
   }
 
   handleClose = () => {
-    this.setState({ open: false, error: undefined })
+    this.setState({open: false, error: undefined})
   }
 
   handleUserChange = (username, attributes) => {
-    this.setState({ open: true, loading: true, error: undefined })
+    this.setState({open: true, loading: true, error: undefined})
     const {username: currentUserUsername, password: currentUserPassword} = this.props
     return new Promise((resolve, reject) => {
       fetch(backUrl("update_user"), {
@@ -246,8 +233,8 @@ export default class UserManager extends React.Component {
           },
         }),
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       })
         .then(response => response.json())
@@ -267,8 +254,8 @@ export default class UserManager extends React.Component {
     })
   }
 
-  handleUserDelete = (username) => {
-    this.setState({ open: true, loading: true, error: undefined })
+  handleUserDelete = username => {
+    this.setState({open: true, loading: true, error: undefined})
     const {username: currentUserUsername, password: currentUserPassword} = this.props
     return new Promise((resolve, reject) => {
       fetch(backUrl("delete_user"), {
@@ -281,8 +268,8 @@ export default class UserManager extends React.Component {
           },
         }),
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       })
         .then(response => response.json())
@@ -303,11 +290,7 @@ export default class UserManager extends React.Component {
   }
 
   render() {
-    const {
-      loading,
-      users,
-      error,
-    } = this.state
+    const {loading, users, error} = this.state
 
     return (
       <div>
@@ -321,18 +304,18 @@ export default class UserManager extends React.Component {
         >
           <DialogTitle id="form-dialog-title">Gestion des accès</DialogTitle>
           <DialogContent>
-            { loading && (
-                <Grid container justify = "center">
-                  <CircularProgress/>
-                </Grid>
+            {loading && (
+              <Grid container justify="center">
+                <CircularProgress />
+              </Grid>
             )}
-            { error && (
-              <DialogContentText>
-                {errorTranslator(error)}
-              </DialogContentText>
-            )}
-            { users && (
-              <UserList users={users} onUserChange={this.handleUserChange} onUserDelete={this.handleUserDelete} />
+            {error && <DialogContentText>{errorTranslator(error)}</DialogContentText>}
+            {users && (
+              <UserList
+                users={users}
+                onUserChange={this.handleUserChange}
+                onUserDelete={this.handleUserDelete}
+              />
             )}
           </DialogContent>
           <DialogActions>
