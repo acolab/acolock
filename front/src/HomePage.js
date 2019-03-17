@@ -55,6 +55,9 @@ const styles = theme => ({
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
+  logout: {
+    marginTop: theme.spacing.unit * 3,
+  },
   progress: {
     marginTop: theme.spacing.unit * 3,
   },
@@ -76,7 +79,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.error.main,
   },
   manageCodes: {
-    textAlign: "right",
+    textAlign: "center",
     marginTop: theme.spacing.unit * 2,
   },
 })
@@ -150,6 +153,12 @@ class HomePage extends React.Component {
       .catch(error => {
         this.setState({loggingIn: false, loggedIn: false, lastActionResult: "server_error"})
       })
+  }
+
+  handleLogoutClick = () => {
+    credentialStore.clearToken()
+    credentialStore.clearAdmin()
+    this.setState({loggedIn: false, token: undefined, admin: undefined})
   }
 
   handleOpenClick = event => {
@@ -312,6 +321,9 @@ class HomePage extends React.Component {
                 <div className={classes.manageCodes}>
                   <UserManager {...{token}} />
                 </div>
+                <Button fullWidth className={classes.logout} onClick={this.handleLogoutClick}>
+                  Déconnexion
+                </Button>
               </div>
             ))}
           <ActionResult result={lastActionResult} />
