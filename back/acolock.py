@@ -124,7 +124,8 @@ def valid_credentials(credentials, admin_required = False):
     if password_check_required and code["password"] == "":
         return False
 
-    if admin_required and code.get("admin", False) != True:
+    user_is_admin = code.get("admin", False)
+    if admin_required and not user_is_admin:
         return False
 
     if password_check_required:
@@ -135,6 +136,7 @@ def valid_credentials(credentials, admin_required = False):
 
     if result:
         g.current_username = username
+        g.current_user_is_admin = user_is_admin
 
     return result
 
@@ -327,4 +329,4 @@ def login_action():
 
     token = secrets.token_hex()
     save_token(g.current_username, token)
-    return json.dumps({'success': True, 'token': token})
+    return json.dumps({'success': True, 'token': token, 'admin': g.current_user_is_admin})

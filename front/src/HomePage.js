@@ -90,12 +90,14 @@ class HomePage extends React.Component {
 
     const {username, password} = credentialStore.load()
     const token = credentialStore.loadToken()
+    const admin = credentialStore.loadAdmin()
 
     this.state = {
       toggling: false,
       username,
       password,
       token,
+      admin,
       loggedIn: token !== undefined,
     }
   }
@@ -129,7 +131,13 @@ class HomePage extends React.Component {
     e.preventDefault()
 
     const {username, password} = this.state
-    this.setState({loggingIn: true, loggedIn: false, lastActionResult: undefined})
+    this.setState({
+      loggingIn: true,
+      loggedIn: false,
+      lastActionResult: undefined,
+      token: undefined,
+      admin: false,
+    })
     fetch(backUrl("login"), {
       method: "POST",
       body: JSON.stringify({username, password}),
@@ -141,10 +149,17 @@ class HomePage extends React.Component {
       .then(response => response.json())
       .then(response => {
         if (response.success) {
-          const {token} = response
+          const {token, admin} = response
           credentialStore.saveToken(token)
-          credentialStore.clear()
-          this.setState({loggingIn: false, loggedIn: true, lastActionResult: "logged_in", token})
+          credentialStore.saveAdmin(admin)
+          credentialStore.clearUsernameAndPassword()
+          this.setState({
+            loggingIn: false,
+            loggedIn: true,
+            lastActionResult: "logged_in",
+            token,
+            admin,
+          })
         } else {
           const {error} = response
           this.setState({loggingIn: false, loggedIn: false, lastActionResult: error})
@@ -236,6 +251,7 @@ class HomePage extends React.Component {
       token,
       username,
       password,
+      admin,
     } = this.state
 
     return (
@@ -318,9 +334,11 @@ class HomePage extends React.Component {
                     </Button>
                   </Grid>
                 </Grid>
-                <div className={classes.manageCodes}>
-                  <UserManager {...{token}} />
-                </div>
+                {admin && (
+                  <div className={classes.manageCodes}>
+                    <UserManager {...{token}} />
+                  </div>
+                )}
                 <Button fullWidth className={classes.logout} onClick={this.handleLogoutClick}>
                   Déconnexion
                 </Button>
