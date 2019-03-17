@@ -15,12 +15,31 @@ import PersonIcon from "@material-ui/icons/Person"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import errorTranslator from "./errorTranslator"
 import ConfirmDialog from "./ConfirmDialog"
+import SnackbarContent from "@material-ui/core/SnackbarContent"
+import withStyles from "@material-ui/core/styles/withStyles"
 
 import backUrl from "./backUrl"
 
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
+
+class ErrorMessage extends React.PureComponent {
+  render() {
+    const {message, classes} = this.props
+    if (message === undefined) return null
+
+    console.log({message})
+    return (
+      <SnackbarContent className={classes.error} message={errorTranslator(message) || message} />
+    )
+  }
+}
+const ErrorMessageWrapper = withStyles(theme => ({
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+}))(ErrorMessage)
 
 class User extends React.Component {
   constructor(props) {
@@ -37,7 +56,9 @@ class User extends React.Component {
   }
 
   handleItemClick = () => {
-    const {user} = this.props
+    const {user, disabled} = this.props
+    if (disabled) return
+
     this.setState({
       open: true,
       admin: user && user.admin,
@@ -76,14 +97,13 @@ class User extends React.Component {
 
   handleDeleteConfirm = () => {
     const {username, onDelete} = this.props
-    this.setState({confirmDelete: false})
+    this.setState({confirmDelete: false, open: false, error: undefined})
     onDelete(username)
       .then(() => {
-        this.setState({open: false, password: ""})
+        this.setState({password: "", error: undefined})
       })
       .catch(error => {
-        alert(errorTranslator(error) || error)
-        this.setState({loading: false})
+        this.setState({loading: false, open: true, error: "server_error"})
       })
   }
 
@@ -91,15 +111,14 @@ class User extends React.Component {
     event.stopPropagation()
     const {username} = this.props
     const {admin, password, username: newUsername} = this.state
-    this.setState({loading: true})
+    this.setState({loading: true, open: false, error: undefined})
     this.props
       .onChange(username, {admin, password, username: newUsername})
       .then(() => {
-        this.setState({open: false, password: ""})
+        this.setState({loading: false, open: false, password: "", error: undefined})
       })
       .catch(error => {
-        alert(errorTranslator(error) || error)
-        this.setState({loading: false})
+        this.setState({loading: false, open: true, error: "server_error"})
       })
   }
 
@@ -109,7 +128,7 @@ class User extends React.Component {
 
   render() {
     const {username, newUser} = this.props
-    const {open, admin, password, username: newUsername, loading, confirmDelete} = this.state
+    const {open, admin, password, username: newUsername, loading, confirmDelete, error} = this.state
 
     return (
       <ListItem button onClick={this.handleItemClick}>
@@ -125,6 +144,7 @@ class User extends React.Component {
             {newUser ? "Nouvel utilisateur" : username}
           </DialogTitle>
           <DialogContent>
+            <ErrorMessageWrapper message={errorTranslator(error) || error} />
             {newUser && (
               <TextField
                 margin="dense"
@@ -152,7 +172,11 @@ class User extends React.Component {
             />
           </DialogContent>
           <DialogActions>
-            {!newUser && <Button onClick={this.handleDelete}>Supprimer</Button>}
+            {!newUser && (
+              <Button onClick={this.handleDelete} color="secondary">
+                Supprimer
+              </Button>
+            )}
             <Button onClick={this.handleClose}>Annuler</Button>
             <Button disabled={loading} onClick={this.handleSubmit} color="primary">
               Enregistrer
@@ -170,10 +194,10 @@ class User extends React.Component {
   }
 }
 
-const UserList = ({users, onUserChange, onUserDelete}) => {
+const UserList = ({users, onUserChange, onUserDelete, disabled}) => {
   return (
     <List component="nav">
-      <User key="new-user" newUser onChange={onUserChange} />
+      <User key="new-user" newUser onChange={onUserChange} disabled={disabled} />
       {Object.keys(users).map(key => (
         <User
           key={key}
@@ -181,6 +205,7 @@ const UserList = ({users, onUserChange, onUserDelete}) => {
           user={users[key]}
           onChange={onUserChange}
           onDelete={onUserDelete}
+          disabled={disabled}
         />
       ))}
     </List>
@@ -215,6 +240,9 @@ export default class UserManager extends React.Component {
   }
 
   handleClose = () => {
+    const {loading} = this.state
+    if (loading) return
+
     this.setState({open: false, error: undefined})
   }
 
@@ -313,6 +341,7 @@ export default class UserManager extends React.Component {
                 users={users}
                 onUserChange={this.handleUserChange}
                 onUserDelete={this.handleUserDelete}
+                disabled={loading}
               />
             )}
           </DialogContent>
