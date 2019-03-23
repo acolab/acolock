@@ -10,7 +10,7 @@ import peewee
 import datetime
 import logging
 from playhouse.db_url import connect
-import secrets
+from os import urandom
 
 app = Flask(__name__)
 
@@ -327,6 +327,6 @@ def login_action():
     if not valid_credentials(request.json):
         return json.dumps({'success': False, 'error': "invalid_credentials"})
 
-    token = secrets.token_hex()
+    token = urandom(16).hex()
     save_token(g.current_username, token)
     return json.dumps({'success': True, 'token': token, 'admin': g.current_user_is_admin})
