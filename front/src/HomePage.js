@@ -18,6 +18,7 @@ import Grid from "@material-ui/core/Grid"
 import ActionResult from "./ActionResult"
 import UserManager from "./UserManager"
 import ConfirmDialog from "./ConfirmDialog"
+import NotificationDialog from "./NotificationDialog"
 
 const styles = theme => ({
   main: {
@@ -184,6 +185,7 @@ class HomePage extends React.Component {
       return
     }
     this.sendCommand("open")
+    this.setState({notificationDialogOpen: true})
   }
 
   handleCloseClick = event => {
@@ -233,6 +235,10 @@ class HomePage extends React.Component {
 
   handleMenuClick = () => {
     this.setState({menuOpen: true})
+  }
+
+  handleNotificationDialogClose = () => {
+    this.setState({notificationDialogOpen: false})
   }
 
   render() {
@@ -351,6 +357,11 @@ class HomePage extends React.Component {
               }
               onCancel={this.handleActionCancel}
               onConfirm={this.handleActionConfirm}
+            />
+            <NotificationDialog
+              open={this.state.notificationDialogOpen}
+              toggling={toggling}
+              onClose={this.handleNotificationDialogClose}
             />
           </div>
         </Paper>
