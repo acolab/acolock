@@ -97,6 +97,7 @@
 
   - name: install certificate
     shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d {{ acolock_hostname }} --key-file /etc/nginx/{{ acolock_hostname }}.key --fullchain-file /etc/nginx/{{ acolock_hostname }}.cer --reloadcmd \"systemctl reload nginx\""
+    tags: certificate
 
   handlers:
     - name: restart nginx
