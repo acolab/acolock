@@ -24,7 +24,7 @@ def lock_control(command):
 
     step_turn_timeout = 1
     open_steps = close_steps = 40
-    warmup_delay = 2
+    warmup_delay = 3
 
     def setup_pins():
         for relay in all_relays:
