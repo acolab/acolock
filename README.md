@@ -117,4 +117,6 @@ Normalement ce n'est nécessaire que si on perd les clés existantes ou qu'il fa
 * valider
 * lancer `ansible-vault edit ansible/ovh_keys.yml`
 * modifer les variables avec les clés fournies par OVH
+* enregistrer et quitter
+* vérifier que le token n'expire pas : `python ansible/check_ovh_keys.py` (nécessite un `pip install ovh`)
 * lancer `ansible-playbook -i ansible/hosts ansible/certificate.yml`
