@@ -14,7 +14,10 @@ export default function errorTranslator(error) {
       return "Nom d'utilisateur déjà pris"
     case "logged_in":
       return "Connexion réussie"
+    case undefined:
+      return undefined
     default:
+      console.warn("Unknown error message", error)
       return undefined
   }
 }

@@ -114,7 +114,10 @@ class User extends React.Component {
         this.setState({loading: false, open: false, password: "", error: undefined})
       })
       .catch(error => {
-        this.setState({loading: false, open: true, error})
+        console.error(error)
+
+        const errorMessage = typeof error === "string" ? error : "server_error"
+        this.setState({loading: false, open: true, error: errorMessage})
       })
   }
 
