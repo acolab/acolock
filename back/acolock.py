@@ -98,7 +98,9 @@ def hash_passwords(codes):
     return changed
 
 def hash_password(password):
-    return bcrypt.hashpw(password, bcrypt.gensalt(12))
+    if type(password) is not bytes:
+        password = password.encode('utf-8')
+    return bcrypt.hashpw(password, bcrypt.gensalt(12)).decode("utf-8")
 
 def valid_credentials(credentials, admin_required = False):
     codes = load_codes()
@@ -130,7 +132,7 @@ def valid_credentials(credentials, admin_required = False):
 
     if password_check_required:
         password = credentials["password"]
-        result = bcrypt.checkpw(password, code["password"])
+        result = bcrypt.checkpw(password.encode('utf8'), code["password"].encode('utf8'))
     else:
         result = True
 
