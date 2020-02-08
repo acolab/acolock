@@ -2,3 +2,16 @@
 - name: Install dnsmasq
   package:
     name: dnsmasq
+
+- name: Install dnsmasq configuration
+  template:
+    src: dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+  notify:
+    - restart_dnsmasq
+
+- name: Configure dnsmasq service
+  systemd:
+    name: dnsmasq
+    state: started
+    enabled: true
