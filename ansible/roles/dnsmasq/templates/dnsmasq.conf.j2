@@ -77,7 +77,6 @@
 # The example below send any host in double-click.net to a local
 # web-server.
 #address=/double-click.net/127.0.0.1
-address=/acolock.acolab.fr/192.168.1.150
 
 # --address (and --server) work with IPv6 addresses too.
 #address=/www.thekelleys.org.uk/fe80::20d:60ff:fe36:f83
@@ -122,7 +121,7 @@ address=/acolock.acolab.fr/192.168.1.150
 # want dnsmasq to really bind only the interfaces it is listening on,
 # uncomment this option. About the only time you may need this is when
 # running another nameserver on the same machine.
-bind-interfaces
+#bind-interfaces
 
 # If you don't want dnsmasq to read /etc/hosts, uncomment the
 # following line.
@@ -155,7 +154,7 @@ bind-interfaces
 # a lease time. If you have more than one network, you will need to
 # repeat this for each network on which you want to supply DHCP
 # service.
-dhcp-range=192.168.1.51,192.168.1.99,12h
+#dhcp-range=192.168.1.51,192.168.1.99,12h
 
 # This is an example of a DHCP range where the netmask is given. This
 # is needed for networks we reach the dnsmasq DHCP server via a relay
@@ -322,7 +321,7 @@ dhcp-range=192.168.1.51,192.168.1.99,12h
 
 # Override the default route supplied by dnsmasq, which assumes the
 # router is the same machine as the one running dnsmasq.
-dhcp-option=3,192.168.1.1
+#dhcp-option=3,192.168.1.1
 
 # Do the same thing, but using the option name
 #dhcp-option=option:router,1.2.3.4
@@ -651,6 +650,28 @@ dhcp-option=3,192.168.1.1
 # dns
 #dhcp-option=6,8.8.8.8
 
+# Empeche de lire /etc/resolv.conf (qui envoie vers dnsmasq)
+no-resolv
+
+# Serveurs DNS à qui transmettre les demandes
+server=9.9.9.9
+server=149.112.112.112
+server=8.8.8.8
+server=8.8.4.4
+
+# Résolution fixe pour que l'ACoLock fonctionne même sans internet
+address=/acolock.acolab.fr/192.168.1.150
+
+# Active le DHCP
+bind-interfaces
+
+# Range d'allocation d'IP par le DHCP
+dhcp-range=192.168.1.51,192.168.1.99,12h
+
+# Indique que la passerelle par défaut est le routeur 4G
+dhcp-option=3,192.168.1.1
+
+# Adresses IP fixes
 dhcp-host=00:0F:13:32:0A:56,192.168.1.42
 dhcp-host=0C:82:68:A7:C1:22,192.168.1.101
 dhcp-host=00:0F:13:32:0C:E5,192.168.1.102
