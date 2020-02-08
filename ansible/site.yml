@@ -4,6 +4,8 @@
 - hosts: pi
   remote_user: pi
   become: yes
+  roles:
+    - { name: dnsmasq, tags: ["dnsmasq"] }
   tasks:
   - name: Install service config
     template:
