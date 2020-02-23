@@ -1,0 +1,29 @@
+---
+- name: Copy ssh key
+  copy:
+    src: id_rsa
+    dest: /etc/ssh/port_forward_id_rsa
+    mode: "0600"
+  notify:
+    - restart ssh_port_forward
+
+- name: Add known host
+  known_hosts:
+    name: "{{ remote_host }}"
+    path: /etc/ssh/ssh_known_hosts
+    state: present
+    key: "{{ remote_host_key }}"
+
+- name: Create service
+  template:
+    src: ssh_port_forward.service.j2
+    dest: /etc/systemd/system/ssh_port_forward.service
+  notify:
+    - reload systemd
+    - restart ssh_port_forward
+
+- name: Enable service
+  service:
+    name: ssh_port_forward.service
+    enabled: yes
+    state: started

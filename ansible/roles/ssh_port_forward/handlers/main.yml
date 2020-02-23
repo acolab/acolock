@@ -1,0 +1,9 @@
+---
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart ssh_port_forward
+  service:
+    name: ssh_port_forward
+    state: restarted
+
