@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/ssh -i /etc/ssh/port_forward_id_rsa -v -g -N -T -o "ServerAliveInterval 10" -o "ExitOnForwardFailure yes" -R "*:{{ remote_port }}:localhost:22" {{ remote_username }}@{{ remote_host }}
+ExecStart=/usr/bin/ssh -i /etc/ssh/port_forward_id_rsa -v -g -N -T -o "ServerAliveInterval 10" -o "ExitOnForwardFailure yes" -R "{{ remote_port }}:localhost:22" {{ remote_username }}@{{ remote_host }}
 Restart=always
 RestartSec=5s
 
