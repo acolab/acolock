@@ -6,6 +6,7 @@
   become: yes
   roles:
     - { name: dnsmasq, tags: ["dnsmasq"] }
+    - { name: sshd_config, tags: ["sshd_config"] }
     - { name: ssh_port_forward, tags: ["ssh_port_forward"] }
   tasks:
   - name: Install service config
