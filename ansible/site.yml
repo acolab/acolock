@@ -9,6 +9,14 @@
     - { name: sshd_config, tags: ["sshd_config"] }
     - { name: ssh_port_forward, tags: ["ssh_port_forward"] }
   tasks:
+  - name: Set timezone
+    copy:
+      content: "Europe/Paris\n"
+      dest: /etc/timezone
+    tags:
+      - back
+      - timezone
+
   - name: Install service config
     template:
       src: acolock_back.service
