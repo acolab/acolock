@@ -10,5 +10,6 @@ docker run \
   -d \
   -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cap-add SYS_ADMIN \
+  --cap-add NET_ADMIN \
   --name acolock \
   acolock
