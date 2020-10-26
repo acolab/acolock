@@ -111,6 +111,33 @@
     shell: bash -c "source /root/.acme.sh/acme.sh.env; /root/.acme.sh/acme.sh --install-cert -d {{ acolock_hostname }} --key-file /etc/nginx/{{ acolock_hostname }}.key --fullchain-file /etc/nginx/{{ acolock_hostname }}.cer --reloadcmd \"systemctl reload nginx\""
     tags: certificate
 
+  - name: Ensure Hardware Watchdog is enabled at boot
+    lineinfile:
+      path: /boot/config.txt
+      line: dtparam=watchdog=on
+    register: hw_watchdog
+
+  - name: Reboot the machine
+    reboot:
+      reboot_timeout: 3600
+    when: hw_watchdog.changed
+
+  - name: Ensure Watchdog package is installed
+    apt:
+      name: watchdog
+
+  - name: Write watchdog config
+    template:
+      src: watchdog.conf
+      dest: /etc/watchdog.conf
+
+  - name: Ensure Watchdog is enabled and started
+    service:
+      name: watchdog
+      state: started
+      enabled: yes
+
+
   handlers:
     - name: restart nginx
       service:
