@@ -123,7 +123,7 @@
     apt:
       name: watchdog
 
-  - name: Ensure Watchdog package is installed
+  - name: Write watchdog config
     template:
       src: watchdog.conf
       dest: /etc/watchdog.conf
