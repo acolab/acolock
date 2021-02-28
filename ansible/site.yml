@@ -102,12 +102,12 @@
       name: acolock_back.socket
       enabled: yes
 
-  - name: Install haveged to increase entropy for OpenSSL
+  - name: Ensure haveged is installed to improve entropy for OpenSSL
     apt:
       name: haveged
       state: latest
      
-  - name: generate dhparams
+  - name: generate dhparams (take a VERY long time >30min)
     shell: openssl dhparam -out /etc/nginx/dhparam.pem 2048
     args:
       creates: /etc/nginx/dhparam.pem
