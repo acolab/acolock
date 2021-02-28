@@ -44,7 +44,10 @@ Wifi
 * Network Options
 * Wi-fi
 * Saisir le SSID et le mot de passe
-* paramétrer le DHCP pour qu'il lui attribue l'IP 192.168.1.150
+* paramétrer en IP fixe (c'est lui qui fera DHCP) :
+  * IP : 192.168.1.150
+  * Masque de sous réseau : 255.255.255.0
+  * Passerelle (gateway) : 192.168.1.1 (le routeur 4G)
 
 Ansible
 -------
