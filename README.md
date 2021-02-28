@@ -35,6 +35,7 @@ Système
 * aller dessus avec `ssh pi@x.x.x.x`, mot de passe `raspberry`
 * changer le mot de passe avec `passwd`
 * changer son nom avec `echo acolock | sudo tee /etc/hostname` et `echo 127.0.1.1	acolock acolock.local | sudo tee -a /etc/hosts`
+* ajouter sa clé SSH à partir de son poste avec `ssh-copy-id pi@x.x.x.x` (la connexion par mot de passe sera désactivée pendant l'installation), et éventuellement ajouter la clé SSH d'autres utilisateurs autorisés dans `~pi/.ssh/authorized_keys`
 
 Wifi
 ----
