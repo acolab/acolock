@@ -1,3 +1,10 @@
+- name: Add authorized keys
+  ansible.posix.authorized_key:
+    user: pi
+    state: present
+    key: "{{ lookup('file', item) }}"
+  loop: "{{ lookup('fileglob', 'allowed_ssh_keys/*.pub', wantlist=True) }}"
+
 - name: Install sshd config
   template:
     src: sshd_config.j2
