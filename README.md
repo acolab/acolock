@@ -67,11 +67,11 @@ Toutes les opérations sont à faire sur son poste de travail (pas sur le pi) :
 
 * préparer le serveur, à faire une seule fois ou quand on change la configuration système
 
-    ansible-playbook -i ansible/hosts ansible/site.yml
+    `ansible-playbook -i ansible/hosts ansible/site.yml`
 
 * déployer l'application, à faire à chaque fois qu'on veut mettre à jour l'application (back ou front) :
 
-    ansible-playbook -i ansible/hosts ansible/app.yml
+    `ansible-playbook -i ansible/hosts ansible/app.yml`
 
 Tester dans un container local
 ------------------------------
