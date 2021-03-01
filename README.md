@@ -77,6 +77,22 @@ Toutes les opérations sont à faire sur son poste de travail (pas sur le pi) :
 
     `ansible-playbook -i ansible/hosts ansible/app.yml`
 
+Si c'est la première installation il faut créer un premier compte administrateur :
+
+* aller sur le pi en ssh
+* aller dans le répertoire `back`
+* créer un fichier `codes.yml` contenant :
+
+```yaml
+nom_utilisateur:
+  password: mot_de_passe
+  admin: true
+```
+
+En remplaçant `nom_utilisateur` et `mot_de_passe` par les identifiants du premier compte à créer. Le mot de passe ne restera pas en clair dans le fichier, il sera chiffré lors du premier accès.
+
+L'interface est ensuite accessible sur https://acolock.acolab.fr/
+
 Tester dans un container local
 ------------------------------
 
