@@ -65,7 +65,7 @@ def save_codes(codes):
 def load_codes():
     try:
         with open("codes.yml", 'r') as stream:
-            codes = yaml.load(stream)
+            codes = yaml.load(stream, Loader=yaml.SafeLoader)
     except FileNotFoundError:
         print("Warning: no codes.yml found")
         return {}
@@ -145,7 +145,7 @@ def valid_credentials(credentials, admin_required = False):
 def get_lock_state():
     try:
         with open("lock_state.yml", 'r') as stream:
-            state = yaml.load(stream)
+            state = yaml.load(stream, Loader=yaml.SafeLoader)
     except FileNotFoundError:
         state = {}
     return state
