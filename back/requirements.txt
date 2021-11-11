@@ -14,6 +14,5 @@ peewee-moves==2.0.1
 portalocker==1.5.2
 pycparser==2.19
 PyYAML==4.2b4
-RPi.GPIO==0.7.0
 six==1.12.0
 Werkzeug==0.16.0
