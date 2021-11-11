@@ -1,29 +1,29 @@
 import React from "react"
-import Button from "@material-ui/core/Button"
-import TextField from "@material-ui/core/TextField"
-import Dialog from "@material-ui/core/Dialog"
-import DialogActions from "@material-ui/core/DialogActions"
-import DialogContent from "@material-ui/core/DialogContent"
-import DialogContentText from "@material-ui/core/DialogContentText"
-import DialogTitle from "@material-ui/core/DialogTitle"
-import CircularProgress from "@material-ui/core/CircularProgress"
-import Grid from "@material-ui/core/Grid"
-import Checkbox from "@material-ui/core/Checkbox"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
-import PersonAddIcon from "@material-ui/icons/PersonAdd"
-import PersonIcon from "@material-ui/icons/Person"
-import BuildIcon from "@material-ui/icons/Build"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
+import CircularProgress from "@mui/material/CircularProgress"
+import Grid from "@mui/material/Grid"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import PersonAddIcon from "@mui/icons-material/PersonAdd"
+import PersonIcon from "@mui/icons-material/Person"
+import BuildIcon from "@mui/icons-material/Build"
+import ListItemIcon from "@mui/material/ListItemIcon"
 import errorTranslator from "./errorTranslator"
 import ConfirmDialog from "./ConfirmDialog"
-import SnackbarContent from "@material-ui/core/SnackbarContent"
-import withStyles from "@material-ui/core/styles/withStyles"
+import SnackbarContent from "@mui/material/SnackbarContent"
+import withStyles from "@mui/styles/withStyles"
 
 import backUrl from "./backUrl"
 
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemText from "@material-ui/core/ListItemText"
+import List from "@mui/material/List"
+import ListItem from "@mui/material/ListItem"
+import ListItemText from "@mui/material/ListItemText"
 
 class ErrorMessage extends React.PureComponent {
   render() {
@@ -332,7 +332,7 @@ export default class UserManager extends React.Component {
           <DialogTitle id="form-dialog-title">Gestion des accès</DialogTitle>
           <DialogContent>
             {loading && (
-              <Grid container justify="center">
+              <Grid container justifyContent="center">
                 <CircularProgress />
               </Grid>
             )}

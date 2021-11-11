@@ -1,65 +1,65 @@
 import React from "react"
 import PropTypes from "prop-types"
-import Avatar from "@material-ui/core/Avatar"
-import Button from "@material-ui/core/Button"
-import CssBaseline from "@material-ui/core/CssBaseline"
-import FormControl from "@material-ui/core/FormControl"
-import Input from "@material-ui/core/Input"
-import InputLabel from "@material-ui/core/InputLabel"
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined"
-import LockOpenOutlinedIcon from "@material-ui/icons/LockOpenOutlined"
-import Paper from "@material-ui/core/Paper"
-import Typography from "@material-ui/core/Typography"
-import withStyles from "@material-ui/core/styles/withStyles"
-import CircularProgress from "@material-ui/core/CircularProgress"
+import Avatar from "@mui/material/Avatar"
+import Button from "@mui/material/Button"
+import CssBaseline from "@mui/material/CssBaseline"
+import FormControl from "@mui/material/FormControl"
+import Input from "@mui/material/Input"
+import InputLabel from "@mui/material/InputLabel"
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined"
+import Paper from "@mui/material/Paper"
+import Typography from "@mui/material/Typography"
+import withStyles from "@mui/styles/withStyles"
+import CircularProgress from "@mui/material/CircularProgress"
 import backUrl from "./backUrl"
 import credentialStore from "./credentialStore"
-import Grid from "@material-ui/core/Grid"
+import Grid from "@mui/material/Grid"
 import ActionResult from "./ActionResult"
 import UserManager from "./UserManager"
 import ConfirmDialog from "./ConfirmDialog"
+import {green, red} from "@mui/material/colors"
 
 const styles = theme => ({
   main: {
     width: "auto",
     display: "block", // Fix IE 11 issue.
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up(400)]: {
       width: 400,
       marginLeft: "auto",
       marginRight: "auto",
     },
   },
   paper: {
-    marginTop: theme.spacing.unit * 8,
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+    marginTop: theme.spacing(8),
+    padding: `${theme.spacing(2)} ${theme.spacing(3)} ${theme.spacing(3)}`,
+    width: "auto",
   },
   paperContent: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  avatarOpen: {
-    margin: theme.spacing.unit,
-    backgroundColor: theme.palette.primary.main,
+  avatar: {
+    margin: theme.spacing(1),
   },
-  avatarClosed: {
-    margin: theme.spacing.unit,
-    backgroundColor: theme.palette.secondary.main,
+  brand: {
+    marginBottom: theme.spacing(2),
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing.unit,
+    marginTop: theme.spacing(1),
   },
   submit: {
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
   },
   logout: {
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
   },
   progress: {
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
   },
   progressContainer: {
     textAlign: "center",
@@ -71,16 +71,16 @@ const styles = theme => ({
     textAlign: "center",
   },
   successAvatar: {
-    margin: `${theme.spacing.unit}px auto`,
+    margin: `${theme.spacing(1)} auto`,
     backgroundColor: theme.palette.primary.main,
   },
   failureAvatar: {
-    margin: `${theme.spacing.unit}px auto`,
+    margin: `${theme.spacing(1)} auto`,
     backgroundColor: theme.palette.error.main,
   },
   manageCodes: {
     textAlign: "center",
-    marginTop: theme.spacing.unit * 2,
+    marginTop: theme.spacing(2),
   },
 })
 
@@ -254,11 +254,14 @@ class HomePage extends React.Component {
         <CssBaseline />
         <Paper className={classes.paper}>
           <div className={classes.paperContent}>
-            <Avatar className={lockState === "open" ? classes.avatarOpen : classes.avatarClosed}>
+            <Avatar
+              className={classes.avatar}
+              sx={{bgcolor: lockState === "open" ? "primary.main" : "secondary.main"}}
+            >
               {lockState === "open" && <LockOpenOutlinedIcon />}
               {lockState === "closed" && <LockOutlinedIcon />}
             </Avatar>
-            <Typography component="h1" variant="h5">
+            <Typography component="h1" variant="h5" sx={{mb: 2}}>
               ACoLock
             </Typography>
             {loggedIn || (
@@ -304,7 +307,7 @@ class HomePage extends React.Component {
                 </div>
               ) : (
                 <div>
-                  <Grid container spacing={24}>
+                  <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Button
                         fullWidth
