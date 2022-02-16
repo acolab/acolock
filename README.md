@@ -140,3 +140,10 @@ Normalement ce n'est nécessaire que si on perd les clés existantes ou qu'il fa
 * enregistrer et quitter
 * vérifier que le token n'expire pas : `python ansible/check_ovh_keys.py` (nécessite un `pip install ovh`)
 * lancer `ansible-playbook -i ansible/hosts ansible/certificate.yml`
+
+Modifier les IP fixes et DNS local
+----------------------------------
+
+Les IP fixes du DHCP et les noms de domaine locaux sont définis dans `/etc/dnsmasq.d/acolab.conf`. Après avoir modifié le fichier pour que ce soit pris en compte il faut relancer dnsmasq avec `systemctl restart dnsmasq`.
+
+Il ne faut pas attribuer d'IP fixes dans la plage des IP attribuées automatiquement (entre 51 et 99, voir `dnsmasq.conf`).
