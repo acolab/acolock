@@ -22,7 +22,7 @@ def lock_control(command):
 
     step_sensor_pin = 24
 
-    step_turn_timeout = 1
+    step_turn_timeout = 0.5
     open_steps = close_steps = 40
     warmup_delay = 3
 
