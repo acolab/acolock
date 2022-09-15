@@ -147,3 +147,21 @@ Modifier les IP fixes et DNS local
 Les IP fixes du DHCP et les noms de domaine locaux sont définis dans `/etc/dnsmasq.d/acolab.conf`. Après avoir modifié le fichier pour que ce soit pris en compte il faut relancer dnsmasq avec `systemctl restart dnsmasq`.
 
 Il ne faut pas attribuer d'IP fixes dans la plage des IP attribuées automatiquement (entre 51 et 99, voir `dnsmasq.conf`).
+
+
+Forcer le renouvellement du certificat
+--------------------------------------
+
+Si le certificat ne s'est pas renouvellé correctement on peut le regénérer complètement (le tout doit se faire sur son poste, qui doit être connecté au wifi de l'ACoLab) :
+
+* d'abord supprimer (ou renommer) le répertoire `acme.sh` qui contient les informations sur le certificat :
+
+    ssh pi@acolock.acolab.fr sudo rm /root/.acme.sh -r
+
+* ensuite générer le certificat comme indiqué dans la section correspondante plus haut :
+
+    ansible-playbook -i ansible/hosts ansible/certificate.yml
+
+* puis installer le certificat et relancer le serveur web :
+
+    ansible-playbook -i ansible/hosts ansible/site.yml --tags certificate
