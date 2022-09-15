@@ -156,12 +156,18 @@ Si le certificat ne s'est pas renouvellé correctement on peut le regénérer co
 
 * d'abord supprimer (ou renommer) le répertoire `acme.sh` qui contient les informations sur le certificat :
 
-    ssh pi@acolock.acolab.fr sudo rm /root/.acme.sh -r
+```
+ssh pi@acolock.acolab.fr sudo rm /root/.acme.sh -r
+```
 
 * ensuite générer le certificat comme indiqué dans la section correspondante plus haut :
 
-    ansible-playbook -i ansible/hosts ansible/certificate.yml
+```
+ansible-playbook -i ansible/hosts ansible/certificate.yml
+```
 
 * puis installer le certificat et relancer le serveur web :
 
-    ansible-playbook -i ansible/hosts ansible/site.yml --tags certificate
+```
+ansible-playbook -i ansible/hosts ansible/site.yml --tags certificate
+```
